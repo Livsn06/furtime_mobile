@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-
+import 'package:furtime/screens/start/onwalk_screen.dart';
+import 'package:furtime/utils/_constant.dart';
 import 'package:get/get.dart';
 
-import 'screens/intro/splash.dart';
-import 'utils/_init.dart';
-import 'utils/_routes.dart';
+import 'screens/auth/signup_screen.dart';
+import 'screens/start/splash_screen.dart';
+import 'theme/_themedata.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,11 +21,9 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: dotenv.env['APP_NAME'] ?? '',
-      initialBinding: RootBinding(),
-      initialRoute: Routes.getSplashScreen,
-      getPages: Routes.screens,
-      home: SplashScreen(),
+      title: APP_TITLE.value,
+      theme: customThemeData(),
+      home: const SplashScreen(),
     );
   }
 }
