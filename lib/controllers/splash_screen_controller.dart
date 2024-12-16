@@ -1,9 +1,9 @@
+import 'package:furtime/screens/home/home_screen.dart';
 import 'package:furtime/screens/start/onwalk_screen.dart';
 import 'package:get/get.dart';
 
 import '../models/user_model.dart';
-import '../screens/auth/login_screen.dart';
-import '../screens/home/home_screen.dart';
+
 import '../storage/auth_storage.dart';
 
 class SplashScreenController extends GetxController {

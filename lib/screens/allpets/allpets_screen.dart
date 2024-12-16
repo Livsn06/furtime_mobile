@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:furtime/data/PostCard.dart';
-import 'package:furtime/screens/CreatePost.dart';
-import 'package:furtime/screens/allpets/allpets_screen.dart';
+import 'package:furtime/data/PetCard.dart';
+import 'package:furtime/screens/allpets/AddPet.dart';
 import 'package:furtime/screens/calendar/calendar_screen.dart';
 import 'package:furtime/screens/checklist/checklist.dart';
+import 'package:furtime/screens/home/home_screen.dart';
 import 'package:furtime/screens/profile/profile_screen.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+
+class AllPets extends StatefulWidget {
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<AllPets> createState() => _AllPetsState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-   int _selectedIndex = 0;
+class _AllPetsState extends State<AllPets> {
+  int _selectedIndex = 1;
 
   // List of widgets corresponding to each tab
   final List<Widget> _screens = [
@@ -28,10 +28,10 @@ class _HomeScreenState extends State<HomeScreen> {
       if(index == 2){
         Navigator.push(context, MaterialPageRoute(builder: (context)=>ToDoScreen()));
       }
-      else if(index == 1){
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>AllPets()));
+      else if(index == 0){
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
       }
-      else if(index == 4){
+      if(index == 4){
         Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileScreen()));
       }
       else if(index == 3){
@@ -48,13 +48,13 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.amber[400],
         elevation: 0,
         title: const Text(
-          'Dashboard',
+          'My Pets',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         actions: [
             IconButton(onPressed: (){
               Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => createPost()));
+                    MaterialPageRoute(builder: (_) => additionalPet()));
                 }, icon: Icon(Icons.add_to_photos_outlined), iconSize: 35,)
         ],
       ),
@@ -71,13 +71,12 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Row(
               children: [
                 Image.asset(
-                  'assets/images/budol.jpg', // Replace with your image asset
+                  'assets/images/ttalgi.jpg', // Replace with your image asset
                   height: 60,
                   width: 60,
-                  
                 ),
                 SizedBox(width: 12),
-                Expanded(
+                const Expanded(
                   child: Text(
                     'We care about your PET',
                     style: TextStyle(
@@ -86,26 +85,27 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-              
               ],
             ),
           ),
+          
+           
           SizedBox(height: 16.0),
-          // Post Cards
-          PostCard(
-            profileName: "Sam Guy",
-            location: "Tempe, AZ",
-            postText: "LIfe",
-            postdesc: "Travel and you will born for a second time. ",
-            imageUrl: "assets/images/ttalgi.jpg", // Replace with your image asset
+          // Pet Cards
+            PetCard(
+               imageUrl: "assets/images/ash.jpg", // Replace with your image asset
+            petName: "Ash",
+            age: "2"+ " Yrs old",
+            breed: "Persian",
+            gender: 'Female',
           ),
           SizedBox(height: 16.0),
-          PostCard(
-            profileName: "Sam Guy",
-            location: "Tempe, AZ",
-            postText: "Travel",
-            postdesc: "Travel and you will born for a second time.",
-            imageUrl: "assets/images/ttalgi.jpg", // Replace with your image asset
+           PetCard(
+               imageUrl: "assets/images/ashh.jpg", // Replace with your image asset
+            petName: "Ash",
+            age: "2"+ " Yrs old",
+            breed: "Persian",
+            gender: 'Female',
           ),
         ],
       ),
@@ -139,6 +139,67 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-    );  
+    );
   }
 }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        elevation: 3.0,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 12),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.asset(
+                  'imageUrl', // Replace with your image asset
+                  height: 160,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+      
+              const Row(
+                children: [
+                 
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'profileName',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                      Text(
+                        'location',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              SizedBox(height: 12),
+              Text(
+                'postText',
+                style: TextStyle(fontSize: 14),
+              ),           
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
