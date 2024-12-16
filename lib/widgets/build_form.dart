@@ -7,10 +7,12 @@ Widget textFormInput({
   isEmail = false,
   isPassword = false,
   isName = false,
+  maxLine = 1,
   String? Function(String?)? validator,
 }) {
   return TextFormField(
     controller: controller,
+    maxLines: maxLine,
     decoration: InputDecoration(
       hintText: label,
       border: const OutlineInputBorder(),

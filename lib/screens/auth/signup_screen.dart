@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:furtime/helpers/auth_api.dart';
 import 'package:furtime/models/user_model.dart';
-import 'package:furtime/screens/home/home_screen.dart';
 import 'package:furtime/widgets/build_modal.dart';
 import 'package:get/get.dart';
 

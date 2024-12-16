@@ -27,6 +27,7 @@ class LoginScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: APP_THEME.value.colorScheme.secondary,
         foregroundColor: Colors.white,
         centerTitle: true,

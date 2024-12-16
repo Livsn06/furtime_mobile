@@ -3,7 +3,6 @@ import 'package:furtime/controllers/onwalk_screen_controller.dart';
 import 'package:furtime/screens/auth/login_screen.dart';
 import 'package:get/get.dart';
 
-import '../../controllers/splash_screen_controller.dart';
 import '../../utils/_constant.dart';
 import '../../utils/_utils.dart';
 
@@ -110,37 +109,3 @@ class OnwalkScreen extends StatelessWidget {
     );
   }
 }
-
-
-
-  //  return Scaffold(
-  //         body: Container(
-  //           width: SCREEN_SIZE.value.width,
-  //           height: SCREEN_SIZE.value.height,
-  //           decoration: screenDecoration(),
-  //           child: Column(
-  //             mainAxisAlignment: MainAxisAlignment.center,
-
-  //             //
-  //             children: [
-  //               //? SPLASH ICON
-  //               Image.asset(
-  //                 InitAssets.path.getStartIcon1,
-  //                 width: SCREEN_SIZE.value.width / 2.5,
-  //                 height: SCREEN_SIZE.value.width / 2.5,
-  //               ),
-  //               space(height: 20),
-
-  //               //? APP TITLE
-  //               Text(
-  //                 APP_TITLE.value,
-  //                 style: const TextStyle(
-  //                   fontSize: 24,
-  //                   color: Colors.white,
-  //                   fontWeight: FontWeight.bold,
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //       );
