@@ -20,25 +20,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final int _selectedIndex = 4;
 
   // List of widgets corresponding to each tab
-  final List<Widget> _screens = [
-    const Center(child: Text('Home Screen')), // Home tab content
-    const Center(child: Text('Search Screen')), // Search tab content
-    const Center(child: Text('Profile Screen')), // Profile tab content
-  ];
 
   void _onItemTapped(int index) {
     setState(() {
       if (index == 0) {
-        Navigator.push(context,
+        Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => const HomeScreen()));
       } else if (index == 1) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => AllPets()));
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => const AllPets()));
       } else if (index == 2) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => ToDoScreen()));
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const ToDoScreen()));
       } else if (index == 3) {
-        Navigator.push(context,
+        Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => const CalendarScreen()));
       }
     });

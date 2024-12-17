@@ -4,147 +4,160 @@ import 'package:furtime/screens/allpets/allpets_screen.dart';
 import 'package:furtime/screens/checklist/checklist.dart';
 import 'package:furtime/screens/home/home_screen.dart';
 import 'package:furtime/screens/profile/profile_screen.dart';
+import 'package:furtime/utils/_constant.dart';
+import 'package:get/get.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import '../../controllers/calendar_controller.dart';
 
 class CalendarScreen extends StatefulWidget {
-  const CalendarScreen({Key? key}) : super(key: key);
+  const CalendarScreen({super.key});
 
   @override
   _CalendarScreenState createState() => _CalendarScreenState();
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
-  int _selectedIndex = 3;
+  final int _selectedIndex = 3;
 
   void _onItemTapped(int index) {
     setState(() {
-      if(index == 0){
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
-      }
-      else if(index == 1){
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>AllPets()));
-      }
-      else if(index == 4){
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileScreen()));
-      }
-      else if(index == 2){
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>ToDoScreen()));
+      if (index == 0) {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()));
+      } else if (index == 1) {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => const AllPets()));
+      } else if (index == 4) {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const ProfileScreen()));
+      } else if (index == 2) {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const ToDoScreen()));
       }
     });
   }
 
-  final List<Reminder> reminders = prelistedReminders; // Use the predefined reminders
+  final List<Reminder> reminders =
+      prelistedReminders; // Use the predefined reminders
   DateTime _selectedDay = DateTime.now(); // Keep track of the selected day
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.amber[400],
-        elevation: 0,
-        centerTitle: true,
-        title: const Text(
-          'Calendar',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-      ),
-      body: Column(
-        children: [
-          TableCalendar(
-            firstDay: DateTime.utc(1990, 1, 1),
-            lastDay: DateTime.utc(2030, 12, 31),
-            focusedDay: _selectedDay,
-            calendarFormat: CalendarFormat.month,
-            eventLoader: (day) => _getEventsForDay(day),
-            selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
-            onDaySelected: (selectedDay, focusedDay) {
-              setState(() {
-                _selectedDay = selectedDay;
-              });
+    SCREEN_SIZE.value = MediaQuery.of(context).size;
+    APP_THEME.value = Theme.of(context);
 
-              final remindersForDate = _getEventsForDay(selectedDay);
-
-              if (remindersForDate.isNotEmpty) {
-                for (var reminder in remindersForDate) {
-                  _showReminderDialog(reminder);
-                }
-              } else {
-                QuickAlert.show(
-                  context: context,
-                  type: QuickAlertType.info,
-                  title: 'No Reminders',
-                  text: 'No reminders found for this date.',
-                  confirmBtnText: 'OKAY',
-                );
-              }
-            },
-          headerStyle: const HeaderStyle(
-            formatButtonVisible: false, // Hides the format button
-            titleCentered: true, // Centers the title
-            leftChevronVisible: true, // Shows the left chevron
-            rightChevronVisible: true, // Shows the right chevron
-            titleTextStyle: TextStyle(
-            fontSize: 20, // Font size of the title
-            fontWeight: FontWeight.bold, // Font weigh  
+    ///
+    return GetBuilder(
+        init: CalendarController(),
+        builder: (controller) {
+          return Scaffold(
+            appBar: AppBar(
+              automaticallyImplyLeading: false,
+              foregroundColor: Colors.white,
+              backgroundColor: APP_THEME.value.colorScheme.secondary,
+              elevation: 0,
+              centerTitle: true,
+              title: const Text(
+                'Calendar',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
-            // decoration: BoxDecoration(
-            //   border: Border.all(
-            //   color: Colors.black.withOpacity(0.8), // Color of the border
-            //   width: 1, // Width of the border
-            // ),
-            // color: Colors.white,
-            // )
-),
+            body: Column(
+              children: [
+                TableCalendar(
+                  firstDay: DateTime.utc(1990, 1, 1),
+                  lastDay: DateTime.utc(2030, 12, 31),
+                  focusedDay: _selectedDay,
+                  calendarFormat: CalendarFormat.month,
+                  eventLoader: (day) => _getEventsForDay(day),
+                  selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
+                  onDaySelected: (selectedDay, focusedDay) {
+                    setState(() {
+                      _selectedDay = selectedDay;
+                    });
 
-          ),
-          const SizedBox(height: 10),
-          Expanded(
-            child: _buildRemindersList(),
-          ),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        useLegacyColorScheme: false,
-        unselectedLabelStyle: TextStyle(color: Colors.black),
-        fixedColor: Colors.blue,
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.pets),
-            label: 'All Pets',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.check),
-            label: 'Check List',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month),
-            label: 'Calendar',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-      ),
-    );
+                    final remindersForDate = _getEventsForDay(selectedDay);
+
+                    if (remindersForDate.isNotEmpty) {
+                      for (var reminder in remindersForDate) {
+                        _showReminderDialog(reminder);
+                      }
+                    } else {
+                      QuickAlert.show(
+                        context: context,
+                        type: QuickAlertType.info,
+                        title: 'No Reminders',
+                        text: 'No reminders found for this date.',
+                        confirmBtnText: 'OKAY',
+                      );
+                    }
+                  },
+                  headerStyle: const HeaderStyle(
+                    formatButtonVisible: false, // Hides the format button
+                    titleCentered: true, // Centers the title
+                    leftChevronVisible: true, // Shows the left chevron
+                    rightChevronVisible: true, // Shows the right chevron
+                    titleTextStyle: TextStyle(
+                      fontSize: 20, // Font size of the title
+                      fontWeight: FontWeight.bold, // Font weigh
+                    ),
+                    // decoration: BoxDecoration(
+                    //   border: Border.all(
+                    //   color: Colors.black.withOpacity(0.8), // Color of the border
+                    //   width: 1, // Width of the border
+                    // ),
+                    // color: Colors.white,
+                    // )
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Expanded(
+                  child: _buildRemindersList(),
+                ),
+              ],
+            ),
+            bottomNavigationBar: BottomNavigationBar(
+              type: BottomNavigationBarType.fixed,
+              useLegacyColorScheme: false,
+              unselectedLabelStyle: const TextStyle(color: Colors.black),
+              fixedColor: Colors.blue,
+              currentIndex: _selectedIndex,
+              onTap: _onItemTapped,
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home),
+                  label: 'Home',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.pets),
+                  label: 'All Pets',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.check),
+                  label: 'Check List',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.calendar_month),
+                  label: 'Calendar',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.person),
+                  label: 'Profile',
+                ),
+              ],
+            ),
+          );
+        });
   }
 
   /// Fetches reminders for a specific day
   List<Reminder> _getEventsForDay(DateTime day) {
-    return reminders
-        .where((reminder) => isSameDay(reminder.dateTime, day)) // Compares only the date
+    return ALL_CALENDAR_DATA.value
+        .where((reminder) => isSameDay(day, reminder.dateTime))
         .toList();
   }
 
@@ -203,22 +216,22 @@ class _CalendarScreenState extends State<CalendarScreen> {
   void _editReminder(Reminder reminder) {
     // Navigate to the edit reminder screen (to be implemented)
     QuickAlert.show(
-      context: context,
-      type: QuickAlertType.confirm,
-      title: 'Edit Reminder',
-      text: 'This is where the edit functionality will go.',
-      confirmBtnText: 'Confirm',
-      cancelBtnText: 'Cancel',
-       onConfirmBtnTap: (){
-         Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => ToDoScreen()));
-      },
-       onCancelBtnTap: (){
-         Navigator.pop(context);
-      }
-  );
+        context: context,
+        type: QuickAlertType.confirm,
+        title: 'Edit Reminder',
+        text: 'This is where the edit functionality will go.',
+        confirmBtnText: 'Confirm',
+        cancelBtnText: 'Cancel',
+        onConfirmBtnTap: () {
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (_) => const ToDoScreen()));
+        },
+        onCancelBtnTap: () {
+          Navigator.pop(context);
+        });
+  }
 }
-}
+
 /// Helper function to compare only the date part of DateTime objects
 bool isSameDay(DateTime a, DateTime b) {
   return a.year == b.year && a.month == b.month && a.day == b.day;

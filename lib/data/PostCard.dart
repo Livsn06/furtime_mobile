@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:furtime/screens/commentScreen.dart';
+import 'package:image_network/image_network.dart';
+import 'package:intl/intl.dart';
+
+import '../helpers/image_parser.dart';
 
 class PostCard extends StatelessWidget {
   final String profileName;
-  final String location;
+  final String datetime;
   final String postText;
   final String postdesc;
-  final String imageUrl;
+  final String? imageUrl;
 
-  PostCard({
+  const PostCard({
+    super.key,
     required this.profileName,
-    required this.location,
+    required this.datetime,
     required this.postText,
     required this.postdesc,
-    required this.imageUrl,
+    this.imageUrl,
   });
 
   @override
@@ -33,22 +38,22 @@ class PostCard extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     backgroundColor: Colors.grey[300],
-                    child: Icon(Icons.person, color: Colors.white),
+                    child: const Icon(Icons.person, color: Colors.white),
                   ),
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         profileName,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
                         ),
                       ),
                       Text(
-                        location,
-                        style: TextStyle(
+                        formatDateTime(datetime),
+                        style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 12,
                         ),
@@ -57,26 +62,28 @@ class PostCard extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Text(
                 postText,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold), 
-              ),    SizedBox(height: 12),
-               Text(
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 12),
+              Text(
                 postdesc,
-                style: TextStyle(fontSize: 14),
+                style: const TextStyle(fontSize: 14),
               ),
-              SizedBox(height: 12),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.asset(
-                  imageUrl, // Replace with your image asset
-                  height: 160,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
+              const SizedBox(height: 12),
+              if (imageUrl != null)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: ImageNetwork(
+                    image: parseNetworkImage(imageUrl!),
+                    height: 160,
+                    width: double.infinity,
+                  ),
                 ),
-              ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -87,15 +94,15 @@ class PostCard extends StatelessWidget {
                         MaterialPageRoute(
                           builder: (context) => const CommentPage(
                             postContent: 'This is the post Title',
-                            postImage: 'assets/images/budol.jpg', // Optional
+                            postImage: 'assets/images/ttalgi.jpg', // Optional
                           ),
                         ),
                       );
                     },
-                    child: Icon(Icons.comment, color: Colors.grey),
+                    child: const Icon(Icons.comment, color: Colors.grey),
                   ),
-                  SizedBox(width: 4),
-                  Text('3', style: TextStyle(color: Colors.grey)),
+                  const SizedBox(width: 4),
+                  const Text('3', style: TextStyle(color: Colors.grey)),
                 ],
               ),
             ],
@@ -103,5 +110,12 @@ class PostCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String formatDateTime(String dateTimeString) {
+    DateTime dateTime =
+        DateTime.parse(dateTimeString); // Replace with your DateTime
+    String formattedDate = DateFormat("MMM d 'at' h:mm a").format(dateTime);
+    return formattedDate;
   }
 }

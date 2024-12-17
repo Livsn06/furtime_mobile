@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -5,14 +7,15 @@ class PetCard extends StatelessWidget {
   final String petName;
   final String age;
   final String breed;
-    final String gender;
+  final String gender;
   final String imageUrl;
 
-  PetCard({
+  const PetCard({
+    super.key,
     required this.petName,
     required this.age,
     required this.breed,
-     required this.gender,
+    required this.gender,
     required this.imageUrl,
   });
 
@@ -28,10 +31,11 @@ class PetCard extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [ ClipRRect(
+            children: [
+              ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.asset(
-                  imageUrl, // Replace with your image asset
+                child: Image.file(
+                  File(imageUrl), // Replace with your image asset
                   height: 160,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -46,15 +50,15 @@ class PetCard extends StatelessWidget {
                         children: [
                           Text(
                             petName,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
                           ),
-                          Gap(190),
+                          const Gap(190),
                           Text(
                             breed,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontWeight: FontWeight.normal,
                               fontSize: 14,
                             ),
@@ -65,25 +69,25 @@ class PetCard extends StatelessWidget {
                         children: [
                           Text(
                             age,
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.grey,
                               fontSize: 12,
                             ),
-                          ),  Gap(170),
+                          ),
+                          const Gap(170),
                           Text(
-                                gender,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 14,
-                                ),
-                              ),
+                            gender,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.normal,
+                              fontSize: 14,
+                            ),
+                          ),
                         ],
                       ),
                     ],
                   ),
                 ],
               ),
-             
             ],
           ),
         ),

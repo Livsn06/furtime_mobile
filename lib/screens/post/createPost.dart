@@ -1,14 +1,18 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:furtime/controllers/home_screen_controller.dart';
 import 'package:furtime/utils/_constant.dart';
 import 'package:furtime/utils/_utils.dart';
 import 'package:furtime/widgets/build_form.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
-import '../widgets/build_modal.dart';
+import '../../helpers/post_api.dart';
+import '../../models/post_model.dart';
+import '../../widgets/build_modal.dart';
 
 class Createpost extends StatefulWidget {
   const Createpost({super.key});
@@ -18,6 +22,9 @@ class Createpost extends StatefulWidget {
 }
 
 class _CreatepostState extends State<Createpost> {
+  final homeController = HomeScreenController();
+
+  //
   final formKey = GlobalKey<FormState>();
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
@@ -28,9 +35,11 @@ class _CreatepostState extends State<Createpost> {
   List<XFile>? image;
 
   Future<void> _pickImage() async {
-    final pickedImage = await ImagePicker().pickMultiImage();
+    final pickedImage =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedImage == null) return;
     setState(() {
-      image = pickedImage.isNotEmpty ? pickedImage : null;
+      image!.add(pickedImage);
     });
   }
 
@@ -90,12 +99,35 @@ class _CreatepostState extends State<Createpost> {
                 customImageViewer(),
                 const Gap(12),
                 customButton(
-                  label: 'Post',
-                  onPress: () => showSuccessModal(
-                    label: 'Success',
-                    text: 'Post Created Successfully',
-                  ),
-                )
+                    label: 'Post',
+                    onPress: () async {
+                      var post = PostModel(
+                        title: titleController.text,
+                        description: descriptionController.text,
+                      );
+
+                      //
+                      showLoadingModal(
+                        label: 'Posting',
+                        text: 'Please wait...',
+                      );
+                      if (await post.postBlog(image: image?[0])) {
+                        Get.close(1);
+                        showSuccessModal(
+                          label: 'Success',
+                          text: 'Post Created Successfully',
+                          onPress: () => Get.close(2),
+                        );
+                      } else {
+                        Get.close(1);
+                        showFailedModal(
+                          label: 'Error',
+                          text: 'Something went wrong',
+                        );
+                      }
+                      //
+                      homeController.allData();
+                    })
               ],
             ),
           ),

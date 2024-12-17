@@ -25,7 +25,7 @@ void showLoadingModal({label, text}) {
   );
 }
 
-void showSuccessModal({label, text}) {
+void showSuccessModal({label, text, Function()? onPress}) {
   Get.defaultDialog(
     barrierDismissible: false,
     contentPadding: const EdgeInsets.all(20),
@@ -38,7 +38,7 @@ void showSuccessModal({label, text}) {
         //
         customButton(
           label: "OK",
-          onPress: () => Get.close(1),
+          onPress: onPress,
         ),
       ],
     ),

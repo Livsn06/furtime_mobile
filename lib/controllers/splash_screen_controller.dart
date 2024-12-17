@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import '../models/user_model.dart';
 
 import '../storage/auth_storage.dart';
+import '../utils/_constant.dart';
 
 class SplashScreenController extends GetxController {
   @override
@@ -20,7 +21,8 @@ class SplashScreenController extends GetxController {
     }
     if (token is UserModel) {
       Get.snackbar('Success', 'You have successfully login.');
-      Get.offAll(() => HomeScreen());
+      CURRENT_USER.value = token;
+      Get.offAll(() => const HomeScreen());
     }
   }
 
