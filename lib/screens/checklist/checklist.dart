@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:furtime/screens/allpets/allpets_screen.dart';
 import 'package:furtime/screens/calendar/calendar_screen.dart';
 import 'package:furtime/screens/checklist/addScreen.dart';
@@ -14,19 +16,18 @@ class ToDoScreen extends StatefulWidget {
 class _ToDoScreenState extends State<ToDoScreen> {
   int _selectedIndex = 2;
 
+  List<Map<String, dynamic>> tasks = [];
+
   void _onItemTapped(int index) {
     setState(() {
-      if(index == 0){
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
-      }
-      else if(index == 1){
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>AllPets()));
-      }
-      else if(index == 4){
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileScreen()));
-      }
-      else if(index == 3){
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>CalendarScreen()));
+      if (index == 0) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+      } else if (index == 1) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => AllPets()));
+      } else if (index == 4) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen()));
+      } else if (index == 3) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => CalendarScreen()));
       }
     });
   }
@@ -36,7 +37,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-         backgroundColor: Colors.amber[400],
+        backgroundColor: Colors.amber[400],
         elevation: 0,
         title: const Text(
           'Check List',
@@ -44,9 +45,9 @@ class _ToDoScreenState extends State<ToDoScreen> {
         ),
         actions: [
           TextButton.icon(
-             onPressed: () {
+            onPressed: () {
               Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => filterScreen(applyFilter: (bool?applyFilter ) {  },)));
+                  MaterialPageRoute(builder: (_) => filterScreen(applyFilter: (bool? applyFilter) {})));
             },
             icon: const Icon(Icons.filter_list, color: Colors.black),
             label: const Text("Filter", style: TextStyle(color: Colors.black)),
@@ -59,52 +60,38 @@ class _ToDoScreenState extends State<ToDoScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: ListView(
-                children: const [
-                  Text(
-                    'Today',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20),
-                  ),
-                  TodoItem(
-                    title: "Return library books",
-                    description: "Gather overdue library books and return...",
-                    time: "11:30 AM",
-                    date: "26/11/24",
-                    isCompleted: false,
-                  ),
-                  TodoItem(
-                    title: "Go for grocery shop",
-                    description: "",
-                    isCompleted: true,
-                  ),
-                  TodoItem(
-                    title: "Donate unwanted items",
-                    description: "",
-                    isCompleted: true,
-                  ),
-                  Text(
-                    'Tomorrow',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20),
-                  ),
-                ],
+              child: ListView.builder(
+                itemCount: tasks.length,
+                itemBuilder: (context, index) {
+                  final task = tasks[index];
+                  return TodoItem(
+                    title: task['title'],
+                    description: task['description'],
+                    time: task['time'] ?? '',
+                    date: task['date'] ?? '',
+                    isCompleted: task['isCompleted'],
+                  );
+                },
               ),
             ),
           ],
         ),
-      ),floatingActionButton: Stack(
+      ),
+      floatingActionButton: Stack(
         children: [
           Align(
             alignment: Alignment.bottomRight,
             child: FloatingActionButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => addTask()));
+              onPressed: () async {
+                final newTask = await Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => addTask()),
+                );
+
+                if (newTask != null) {
+                  setState(() {
+                    tasks.add(newTask);
+                  });
+                }
               },
               backgroundColor: Colors.grey,
               child: const Icon(Icons.add_outlined),
@@ -221,7 +208,170 @@ class TodoItem extends StatelessWidget {
                 )
               : null,
         ),
-      ), 
+      ),
+    );
+  }
+}
+
+class addTask extends StatefulWidget {
+  @override
+  _addTaskState createState() => _addTaskState();
+}
+
+class _addTaskState extends State<addTask> {
+  DateTime selectedDate = DateTime.now();
+  TimeOfDay selectedTime = TimeOfDay.now();
+  bool hasReminder = false;
+
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _requestNotificationPermission();
+  }
+
+
+  void _requestNotificationPermission() async {
+    bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
+    if (!isAllowed) {
+      await AwesomeNotifications().requestPermissionToSendNotifications();
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (pickedDate != null && pickedDate != selectedDate) {
+      setState(() {
+        selectedDate = pickedDate;
+      });
+    }
+  }
+
+  Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: selectedTime,
+    );
+    if (pickedTime != null && pickedTime != selectedTime) {
+      setState(() {
+        selectedTime = pickedTime;
+      });
+    }
+  }
+
+  void _scheduleNotification(String title, String body, DateTime scheduleTime) {
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
+        channelKey: 'basic_channel',
+        title: title,
+        body: body,
+        notificationLayout: NotificationLayout.Default,
+      ),
+      schedule: NotificationCalendar(
+        year: scheduleTime.year,
+        month: scheduleTime.month,
+        day: scheduleTime.day,
+        hour: scheduleTime.hour,
+        minute: scheduleTime.minute,
+        second: 0,
+        millisecond: 0,
+        timeZone: "Asia/Manila",
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: Text('Create Task', style: TextStyle(color: Colors.black)),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextField(
+                controller: titleController,
+                decoration: InputDecoration(
+                  labelText: "Title",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              SizedBox(height: 10),
+              TextField(
+                controller: descriptionController,
+                decoration: InputDecoration(
+                  labelText: "Description",
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 3,
+              ),
+              SizedBox(height: 20),
+              ListTile(
+                title: Text("Select Date: ${DateFormat('yyyy-MM-dd').format(selectedDate)}"),
+                trailing: Icon(Icons.calendar_today),
+                onTap: () => _selectDate(context),
+              ),
+              ListTile(
+                title: Text("Select Time: ${selectedTime.format(context)}"),
+                trailing: Icon(Icons.access_time),
+                onTap: () => _selectTime(context),
+              ),
+              SwitchListTile(
+                title: Text('Set Reminder'),
+                value: hasReminder,
+                onChanged: (value) {
+                  setState(() {
+                    hasReminder = value;
+                  });
+                },
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  final newTask = {
+                    'title': titleController.text,
+                    'description': descriptionController.text,
+                    'date': DateFormat('yyyy-MM-dd').format(selectedDate),
+                    'time': selectedTime.format(context),
+                    'isCompleted': false,
+                  };
+
+                  if (hasReminder) {
+                    final scheduleDateTime = DateTime(
+                      selectedDate.year,
+                      selectedDate.month,
+                      selectedDate.day,
+                      selectedTime.hour,
+                      selectedTime.minute,
+                    );
+                    _scheduleNotification(
+                      titleController.text,
+                      descriptionController.text,
+                      scheduleDateTime,
+                    );
+                  }
+
+                  Navigator.of(context).pop(newTask);
+                },
+                child: Text('Save'),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
