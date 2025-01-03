@@ -31,7 +31,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             context, MaterialPageRoute(builder: (context) => const AllPets()));
       } else if (index == 2) {
         Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const ToDoScreen()));
+            MaterialPageRoute(builder: (context) => ToDoScreen()));
       } else if (index == 3) {
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => const CalendarScreen()));

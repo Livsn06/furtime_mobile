@@ -36,7 +36,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             MaterialPageRoute(builder: (context) => const ProfileScreen()));
       } else if (index == 2) {
         Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const ToDoScreen()));
+            MaterialPageRoute(builder: (context) => ToDoScreen()));
       }
     });
   }
@@ -224,7 +224,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         cancelBtnText: 'Cancel',
         onConfirmBtnTap: () {
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (_) => const ToDoScreen()));
+              .push(MaterialPageRoute(builder: (_) => ToDoScreen()));
         },
         onCancelBtnTap: () {
           Navigator.pop(context);

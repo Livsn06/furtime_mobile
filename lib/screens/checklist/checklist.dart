@@ -1,232 +1,135 @@
 import 'package:flutter/material.dart';
-import 'package:furtime/models/task_model.dart';
+import 'package:intl/intl.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:furtime/screens/allpets/allpets_screen.dart';
 import 'package:furtime/screens/calendar/calendar_screen.dart';
 import 'package:furtime/screens/checklist/addScreen.dart';
 import 'package:furtime/screens/checklist/filter.dart';
 import 'package:furtime/screens/home/home_screen.dart';
 import 'package:furtime/screens/profile/profile_screen.dart';
-import 'package:furtime/utils/_constant.dart';
-import 'package:gap/gap.dart';
-import 'package:get/get.dart';
-import 'package:sqflite/sqflite.dart';
-
-import '../../controllers/checklist_screen_controller.dart';
-import '../../helpers/db_sqflite.dart';
 
 class ToDoScreen extends StatefulWidget {
-  const ToDoScreen({super.key});
-
   @override
   State<ToDoScreen> createState() => _ToDoScreenState();
 }
 
 class _ToDoScreenState extends State<ToDoScreen> {
-  final int _selectedIndex = 2;
+  int _selectedIndex = 2;
+
+  List<Map<String, dynamic>> tasks = [];
 
   void _onItemTapped(int index) {
     setState(() {
       if (index == 0) {
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
       } else if (index == 1) {
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => const AllPets()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => AllPets()));
       } else if (index == 4) {
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const ProfileScreen()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen()));
       } else if (index == 3) {
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const CalendarScreen()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => CalendarScreen()));
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    SCREEN_SIZE.value = MediaQuery.of(context).size;
-    APP_THEME.value = Theme.of(context);
-
-    //
-    return GetBuilder<TodoScreenController>(
-        init: TodoScreenController(),
-        builder: (controller) {
-          return Obx(() {
-            return Scaffold(
-              appBar: AppBar(
-                automaticallyImplyLeading: false,
-                foregroundColor: Colors.white,
-                backgroundColor: APP_THEME.value.colorScheme.secondary,
-                elevation: 0,
-                title: const Text(
-                  'Check List',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                actions: [
-                  TextButton.icon(
-                    style: TextButton.styleFrom(
-                      foregroundColor: Colors.white,
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (_) => filterScreen(
-                                applyFilter: (bool? applyFilter) {},
-                              )));
-                    },
-                    icon: const Icon(Icons.filter_list),
-                    label: const Text("Filter"),
-                  ),
-                ],
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.amber[400],
+        elevation: 0,
+        title: const Text(
+          'Check List',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
+        actions: [
+          TextButton.icon(
+            onPressed: () {
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => filterScreen(applyFilter: (bool? applyFilter) {})));
+            },
+            icon: const Icon(Icons.filter_list, color: Colors.black),
+            label: const Text("Filter", style: TextStyle(color: Colors.black)),
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: tasks.length,
+                itemBuilder: (context, index) {
+                  final task = tasks[index];
+                  return TodoItem(
+                    title: task['title'],
+                    description: task['description'],
+                    time: task['time'] ?? '',
+                    date: task['date'] ?? '',
+                    isCompleted: task['isCompleted'],
+                  );
+                },
               ),
-              body: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: ListView(
-                        children: [
-                          const Text(
-                            'Today',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20),
-                          ),
-                          if (controller.todayList.isEmpty)
-                            const Text(
-                              '- No Today tasks found -',
-                              style: TextStyle(
-                                  color: Colors.grey,
-                                  fontStyle: FontStyle.italic),
-                            ),
-                          ...controller.todayList.map((todo) {
-                            print("isCompleted: ${todo.isCompleted}");
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: Stack(
+        children: [
+          Align(
+            alignment: Alignment.bottomRight,
+            child: FloatingActionButton(
+              onPressed: () async {
+                final newTask = await Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => addTask()),
+                );
 
-                            //date only
-
-                            return TodoItem(
-                              title: todo.title!,
-                              description: todo.description!,
-                              time: todo.time!,
-                              date: todo.date!,
-                              isCompleted: todo.isCompleted!,
-                              onChanged: (value) async {
-                                var newTodo = TaskModel(
-                                  id: todo.id,
-                                  title: todo.title,
-                                  description: todo.description,
-                                  date: todo.date,
-                                  time: todo.time,
-                                  isCompleted: value ?? false,
-                                  reminder: todo.reminder,
-                                );
-
-                                await DatabaseHelper.instance
-                                    .updateTodo(newTodo.toJson());
-                                controller.allData();
-                              },
-                            );
-                          }),
-                          const Gap(20),
-                          Divider(
-                            color: Colors.grey[300],
-                          ),
-                          const Gap(20),
-                          const Text(
-                            'Tomorrow',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20),
-                          ),
-                          if (controller.tomorrowList.isEmpty)
-                            const Text(
-                              '- No Upcoming tasks found -',
-                              style: TextStyle(
-                                  color: Colors.grey,
-                                  fontStyle: FontStyle.italic),
-                            ),
-
-                          //
-                          ...controller.tomorrowList.map((todo) {
-                            return TodoItem(
-                              title: todo.title!,
-                              description: todo.description!,
-                              time: todo.time!,
-                              date: todo.date!,
-                              isCompleted: todo.isCompleted!,
-                              onChanged: (value) async {
-                                var newTodo = TaskModel(
-                                  id: todo.id,
-                                  title: todo.title,
-                                  description: todo.description,
-                                  date: todo.date,
-                                  time: todo.time,
-                                  isCompleted: value ?? false,
-                                  reminder: todo.reminder,
-                                );
-
-                                await DatabaseHelper.instance
-                                    .updateTodo(newTodo.toJson());
-                                controller.allData();
-                              },
-                            );
-                          }),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              floatingActionButton: Stack(
-                children: [
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: FloatingActionButton(
-                      onPressed: () {
-                        Get.to(() => const addTask());
-                      },
-                      foregroundColor: Colors.white,
-                      backgroundColor: APP_THEME.value.colorScheme.secondary,
-                      child: const Icon(Icons.add_outlined),
-                    ),
-                  ),
-                ],
-              ),
-              bottomNavigationBar: BottomNavigationBar(
-                type: BottomNavigationBarType.fixed,
-                useLegacyColorScheme: false,
-                unselectedLabelStyle: const TextStyle(color: Colors.black),
-                fixedColor: Colors.blue,
-                currentIndex: _selectedIndex,
-                onTap: _onItemTapped,
-                items: const [
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.home),
-                    label: 'Home',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.pets),
-                    label: 'All Pets',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.check),
-                    label: 'Check List',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.calendar_month),
-                    label: 'Calendar',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.person),
-                    label: 'Profile',
-                  ),
-                ],
-              ),
-            );
-          });
-        });
+                if (newTask != null) {
+                  setState(() {
+                    tasks.add(newTask);
+                  });
+                }
+              },
+              backgroundColor: Colors.grey,
+              child: const Icon(Icons.add_outlined),
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        useLegacyColorScheme: false,
+        unselectedLabelStyle: TextStyle(color: Colors.black),
+        fixedColor: Colors.blue,
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.pets),
+            label: 'All Pets',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.check),
+            label: 'Check List',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_month),
+            label: 'Calendar',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -237,16 +140,12 @@ class TodoItem extends StatelessWidget {
   final String date;
   final bool isCompleted;
 
-  final Function(bool?)? onChanged;
-
   const TodoItem({
-    super.key,
     required this.title,
     this.description = '',
     this.time = '',
     this.date = '',
     required this.isCompleted,
-    this.onChanged,
   });
 
   @override
@@ -262,9 +161,7 @@ class TodoItem extends StatelessWidget {
         child: ListTile(
           leading: Checkbox(
             value: isCompleted,
-            onChanged: (value) async {
-              await onChanged!(value);
-            },
+            onChanged: (bool? value) {},
             activeColor: Colors.blue,
           ),
           title: Text(
@@ -275,55 +172,206 @@ class TodoItem extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          subtitle:
-              (description.isNotEmpty || time.isNotEmpty || date.isNotEmpty) &&
-                      !isCompleted
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+          subtitle: description.isNotEmpty || time.isNotEmpty || date.isNotEmpty
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (description.isNotEmpty)
+                      Text(description, overflow: TextOverflow.ellipsis),
+                    const SizedBox(height: 5),
+                    Row(
                       children: [
-                        if (description.isNotEmpty)
-                          Text(description, overflow: TextOverflow.ellipsis),
-                        const SizedBox(height: 5),
-                        Row(
-                          children: [
-                            if (time.isNotEmpty)
-                              Row(
-                                children: [
-                                  const Icon(Icons.access_time,
-                                      size: 16, color: Colors.grey),
-                                  const SizedBox(width: 4),
-                                  Text(time),
-                                ],
-                              ),
-                            if (date.isNotEmpty)
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10.0),
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.calendar_today,
-                                        size: 16, color: Colors.grey),
-                                    const SizedBox(width: 4),
-                                    Text(date),
-                                  ],
-                                ),
-                              ),
-                          ],
-                        ),
+                        if (time.isNotEmpty)
+                          Row(
+                            children: [
+                              const Icon(Icons.access_time,
+                                  size: 16, color: Colors.grey),
+                              const SizedBox(width: 4),
+                              Text(time),
+                            ],
+                          ),
+                        if (date.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10.0),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.calendar_today,
+                                    size: 16, color: Colors.grey),
+                                const SizedBox(width: 4),
+                                Text(date),
+                              ],
+                            ),
+                          ),
                       ],
-                    )
-                  : null,
+                    ),
+                  ],
+                )
+              : null,
         ),
       ),
     );
   }
 }
 
+class addTask extends StatefulWidget {
+  @override
+  _addTaskState createState() => _addTaskState();
+}
+
+class _addTaskState extends State<addTask> {
+  DateTime selectedDate = DateTime.now();
+  TimeOfDay selectedTime = TimeOfDay.now();
+  bool hasReminder = false;
+
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _requestNotificationPermission();
+  }
 
 
-//                  TodoItem(
-//                     title: "Return library books",
-//                     description: "Gather overdue library books and return...",
-//                     time: "11:30 AM",
-//                     date: "26/11/24",
-//                     isCompleted: false,
-//                   ),
+  void _requestNotificationPermission() async {
+    bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
+    if (!isAllowed) {
+      await AwesomeNotifications().requestPermissionToSendNotifications();
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (pickedDate != null && pickedDate != selectedDate) {
+      setState(() {
+        selectedDate = pickedDate;
+      });
+    }
+  }
+
+  Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: selectedTime,
+    );
+    if (pickedTime != null && pickedTime != selectedTime) {
+      setState(() {
+        selectedTime = pickedTime;
+      });
+    }
+  }
+
+  void _scheduleNotification(String title, String body, DateTime scheduleTime) {
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
+        channelKey: 'basic_channel',
+        title: title,
+        body: body,
+        notificationLayout: NotificationLayout.Default,
+      ),
+      schedule: NotificationCalendar(
+        year: scheduleTime.year,
+        month: scheduleTime.month,
+        day: scheduleTime.day,
+        hour: scheduleTime.hour,
+        minute: scheduleTime.minute,
+        second: 0,
+        millisecond: 0,
+        timeZone: "Asia/Manila",
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: Text('Create Task', style: TextStyle(color: Colors.black)),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextField(
+                controller: titleController,
+                decoration: InputDecoration(
+                  labelText: "Title",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              SizedBox(height: 10),
+              TextField(
+                controller: descriptionController,
+                decoration: InputDecoration(
+                  labelText: "Description",
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 3,
+              ),
+              SizedBox(height: 20),
+              ListTile(
+                title: Text("Select Date: ${DateFormat('yyyy-MM-dd').format(selectedDate)}"),
+                trailing: Icon(Icons.calendar_today),
+                onTap: () => _selectDate(context),
+              ),
+              ListTile(
+                title: Text("Select Time: ${selectedTime.format(context)}"),
+                trailing: Icon(Icons.access_time),
+                onTap: () => _selectTime(context),
+              ),
+              SwitchListTile(
+                title: Text('Set Reminder'),
+                value: hasReminder,
+                onChanged: (value) {
+                  setState(() {
+                    hasReminder = value;
+                  });
+                },
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  final newTask = {
+                    'title': titleController.text,
+                    'description': descriptionController.text,
+                    'date': DateFormat('yyyy-MM-dd').format(selectedDate),
+                    'time': selectedTime.format(context),
+                    'isCompleted': false,
+                  };
+
+                  if (hasReminder) {
+                    final scheduleDateTime = DateTime(
+                      selectedDate.year,
+                      selectedDate.month,
+                      selectedDate.day,
+                      selectedTime.hour,
+                      selectedTime.minute,
+                    );
+                    _scheduleNotification(
+                      titleController.text,
+                      descriptionController.text,
+                      scheduleDateTime,
+                    );
+                  }
+
+                  Navigator.of(context).pop(newTask);
+                },
+                child: Text('Save'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

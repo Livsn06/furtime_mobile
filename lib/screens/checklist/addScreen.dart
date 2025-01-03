@@ -102,15 +102,15 @@ class _addTaskState extends State<addTask> {
                 trailing: const Icon(Icons.access_time),
                 onTap: () => _selectTime(context),
               ),
-              SwitchListTile(
-                title: const Text('Set Reminder'),
-                value: hasReminder,
-                onChanged: (value) {
-                  setState(() {
-                    hasReminder = value;
-                  });
-                },
-              ),
+              // SwitchListTile(
+              //   title: const Text('Set Reminder'),
+              //   value: hasReminder,
+              //   onChanged: (value) {
+              //     setState(() {
+              //       hasReminder = value;
+              //     });
+              //   },
+              // ),
               const SizedBox(height: 20),
               customButton(
                 label: "Add Task",
@@ -127,7 +127,7 @@ class _addTaskState extends State<addTask> {
                       date: DateFormat('yyyy-MM-dd').format(selectedDate),
                       time: selectedTime.format(context),
                       isCompleted: false,
-                      reminder: hasReminder,
+                      reminder: true,
                     );
 
                     int isSuccess =

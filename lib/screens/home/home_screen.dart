@@ -24,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       if (index == 2) {
         Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const ToDoScreen()));
+            MaterialPageRoute(builder: (context) => ToDoScreen()));
       } else if (index == 1) {
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => const AllPets()));

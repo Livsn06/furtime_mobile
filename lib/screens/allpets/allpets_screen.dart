@@ -24,7 +24,7 @@ class _AllPetsState extends State<AllPets> {
   void _onItemTapped(int index) {
     setState(() {
       if (index == 2) {
-        Get.offAll(() => const ToDoScreen(), transition: Transition.fadeIn);
+        Get.offAll(() => ToDoScreen(), transition: Transition.fadeIn);
       } else if (index == 0) {
         Get.offAll(() => const HomeScreen(), transition: Transition.fadeIn);
       }
