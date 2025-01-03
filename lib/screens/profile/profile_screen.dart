@@ -15,41 +15,18 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  int _selectedIndex = 4;
-
-  // List of widgets corresponding to each tab
-  final List<Widget> _screens = [
-    const Center(child: Text('Home Screen')), // Home tab content
-    const Center(child: Text('Search Screen')), // Search tab content
-    const Center(child: Text('Profile Screen')), // Profile tab content
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      if(index == 0){
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
-      }
-      else if(index == 1){
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>AllPets()));
-      }
-      else if(index == 2){
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>ToDoScreen()));
-      }
-      else if(index == 3){
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>CalendarScreen()));
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.amber[400],
-        title: const Text('Profile', style: TextStyle(
-          fontWeight: FontWeight.bold,
-        ),),
+        title: const Text(
+          'Profile',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         centerTitle: true,
       ),
       endDrawer: Drawer(
@@ -142,13 +119,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               // Logout Button
               ElevatedButton(
                 onPressed: () {
-                 Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => LoginScreen()));
-      
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (_) => LoginScreen()));
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.red,
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                 ),
                 child: const Text(
                   'LOG OUT',
@@ -169,36 +146,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        useLegacyColorScheme: false,
-        unselectedLabelStyle: TextStyle(color: Colors.black),
-        fixedColor: Colors.blue,
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.pets),
-            label: 'All Pets',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.check),
-            label: 'Check List',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month),
-            label: 'Calendar',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
       ),
     );
   }

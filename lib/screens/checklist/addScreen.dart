@@ -6,42 +6,17 @@ import 'package:furtime/screens/home/home_screen.dart';
 import 'package:furtime/screens/profile/profile_screen.dart';
 import 'package:intl/intl.dart';
 
-class addTask extends StatefulWidget {
- 
+class AddTask extends StatefulWidget {
+  const AddTask({super.key});
+
   @override
-  _addTaskState createState() => _addTaskState();
+  _AddTaskState createState() => _AddTaskState();
 }
 
-class _addTaskState extends State<addTask> {
-
-  int _selectedIndex = 0;
-
-  // List of widgets corresponding to each tab
-  final List<Widget> _screens = [
-    const Center(child: Text('Home Screen')), // Home tab content
-    const Center(child: Text('Search Screen')), // Search tab content
-    const Center(child: Text('Profile Screen')), // Profile tab content
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      if(index == 2){
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileScreen()));
-      }
-      else if(index == 1){
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>AllPets()));
-      }
-      if(index == 0){
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
-      }
-    });
-  }
-
-
+class _AddTaskState extends State<AddTask> {
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
   bool hasReminder = false;
-
 
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
@@ -49,7 +24,6 @@ class _addTaskState extends State<addTask> {
   @override
   void initState() {
     super.initState();
-
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -84,7 +58,7 @@ class _addTaskState extends State<addTask> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: Text('Create Task', style: TextStyle(color: Colors.black)),
+        title: const Text('Create Task', style: TextStyle(color: Colors.black)),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -94,35 +68,34 @@ class _addTaskState extends State<addTask> {
             children: [
               TextField(
                 controller: titleController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Title",
                   border: OutlineInputBorder(),
-                 
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextField(
                 controller: descriptionController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Description",
                   border: OutlineInputBorder(),
-                  
                 ),
                 maxLines: 3,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ListTile(
-                title: Text("Select Date: ${DateFormat('yyyy-MM-dd').format(selectedDate)}"),
-                trailing: Icon(Icons.calendar_today),
+                title: Text(
+                    "Select Date: ${DateFormat('yyyy-MM-dd').format(selectedDate)}"),
+                trailing: const Icon(Icons.calendar_today),
                 onTap: () => _selectDate(context),
               ),
               ListTile(
                 title: Text("Select Time: ${selectedTime.format(context)}"),
-                trailing: Icon(Icons.access_time),
+                trailing: const Icon(Icons.access_time),
                 onTap: () => _selectTime(context),
               ),
               SwitchListTile(
-                title: Text('Set Reminder'),
+                title: const Text('Set Reminder'),
                 value: hasReminder,
                 onChanged: (value) {
                   setState(() {
@@ -130,35 +103,17 @@ class _addTaskState extends State<addTask> {
                   });
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: ()  {
-                 Navigator.of(context).pop(
-                  MaterialPageRoute(builder: (_) => ToDoScreen()));
+                onPressed: () {
+                  Navigator.of(context).pop(
+                      MaterialPageRoute(builder: (_) => const ToDoScreen()));
                 },
-                child: Text('Save'),
+                child: const Text('Save'),
               ),
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.pets),
-            label: 'All Pets',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
       ),
     );
   }

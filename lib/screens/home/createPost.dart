@@ -1,4 +1,3 @@
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -6,15 +5,15 @@ import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:image_picker/image_picker.dart';
-class createPost
- extends StatefulWidget {
-  const createPost({super.key});
+
+class CreatePost extends StatefulWidget {
+  const CreatePost({super.key});
 
   @override
-  State<createPost> createState() => _createPostState();
+  State<CreatePost> createState() => _CreatePostState();
 }
 
-class _createPostState extends State<createPost> {
+class _CreatePostState extends State<CreatePost> {
   final formKey = GlobalKey<FormState>();
   final firstName = TextEditingController();
 
@@ -22,12 +21,13 @@ class _createPostState extends State<createPost> {
   final password = TextEditingController();
   final confirmPassword = TextEditingController();
   bool showPassword = true;
-   final lastName = TextEditingController();
+  final lastName = TextEditingController();
   String? gender;
   XFile? image;
 
   Future<void> _pickImage() async {
-    final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedImage =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
     setState(() {
       image = pickedImage;
     });
@@ -36,7 +36,7 @@ class _createPostState extends State<createPost> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     appBar: AppBar(
+      appBar: AppBar(
         backgroundColor: Colors.amber[400],
         elevation: 0,
         centerTitle: true,
@@ -44,20 +44,17 @@ class _createPostState extends State<createPost> {
           'Create Post',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
-       
       ),
       body: Container(
         height: double.infinity,
         padding: const EdgeInsets.all(16),
-       
         child: Form(
           key: formKey,
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
-                    'To Post, please enter the needed information.'),
+                const Text('To Post, please enter the needed information.'),
                 const Gap(12),
                 TextFormField(
                   controller: firstName,
@@ -66,48 +63,48 @@ class _createPostState extends State<createPost> {
                     if (value == null || value.isEmpty) {
                       return 'Required.';
                     }
+                    return null;
                   },
                 ),
                 const Gap(12),
                 TextFormField(
                   controller: lastName,
+                  maxLines: 3,
                   decoration: setTextDecoration('Description'),
-                  keyboardType: TextInputType.number,
+                  keyboardType: TextInputType.text,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Required';
                     }
+                    return null;
                   },
-                ),     const Gap(12),
-              
-                      const Gap(12),
+                ),
+                const Gap(12),
+                const Gap(12),
                 ElevatedButton(
                   onPressed: _pickImage,
                   child: const Text('Choose Image'),
                 ),
-                if (image != null)
-                  Image.file(File(image!.path)),
-    
+                if (image != null) Image.file(File(image!.path)),
                 const Gap(12),
                 ElevatedButton(
-                  onPressed: (){
-                     QuickAlert.show(
-                  context: context,
-                  type: QuickAlertType.confirm,
-                  // text: 'sample',
-                  title: 'Are you Sure?',
-                  confirmBtnText: 'Confirm',
-                  cancelBtnText: 'Cancel',
-                  onConfirmBtnTap: () {
-                      Navigator.of(context).pop();
-                  // Navigator.of(context).push(
-                  // MaterialPageRoute(builder: (_) => AllPets()));
+                  onPressed: () {
+                    QuickAlert.show(
+                        context: context,
+                        type: QuickAlertType.confirm,
+                        // text: 'sample',
+                        title: 'Are you Sure?',
+                        confirmBtnText: 'Confirm',
+                        cancelBtnText: 'Cancel',
+                        onConfirmBtnTap: () {
+                          Navigator.of(context).pop();
+                          // Navigator.of(context).push(
+                          // MaterialPageRoute(builder: (_) => AllPets()));
+                        },
+                        onCancelBtnTap: () {
+                          Navigator.of(context).pop();
+                        });
                   },
-                    onCancelBtnTap: () {
-                     Navigator.of(context).pop();}
-                    );
-                  },
-                  
                   child: const Text('Add'),
                 ),
               ],
@@ -117,15 +114,11 @@ class _createPostState extends State<createPost> {
       ),
     );
   }
- 
+
   InputDecoration setTextDecoration(String name, {bool isPassword = false}) {
     return InputDecoration(
       border: const OutlineInputBorder(),
       label: Text(name),
     );
   }
-
-  }
-
-
-
+}
