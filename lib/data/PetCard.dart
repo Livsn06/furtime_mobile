@@ -2,12 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
 
 class PetCard extends StatelessWidget {
   final String petName;
   final String age;
   final String breed;
   final String gender;
+  final String type;
   final String imageUrl;
 
   const PetCard({
@@ -16,6 +18,7 @@ class PetCard extends StatelessWidget {
     required this.age,
     required this.breed,
     required this.gender,
+    required this.type,
     required this.imageUrl,
   });
 
@@ -41,48 +44,46 @@ class PetCard extends StatelessWidget {
                   fit: BoxFit.cover,
                 ),
               ),
-              Row(
+              const Gap(15),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          Text(
-                            petName,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                          const Gap(190),
-                          Text(
-                            breed,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.normal,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
+                      Text(
+                        petName,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
                       ),
-                      Row(
-                        children: [
-                          Text(
-                            age,
-                            style: const TextStyle(
-                              color: Colors.grey,
-                              fontSize: 12,
-                            ),
-                          ),
-                          const Gap(170),
-                          Text(
-                            gender,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.normal,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
+                      Text(
+                        '$breed [${GetUtils.capitalizeFirst(type)}]',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.normal,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        age,
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                        ),
+                      ),
+                      const Gap(170),
+                      Text(
+                        gender,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.normal,
+                          fontSize: 14,
+                        ),
                       ),
                     ],
                   ),

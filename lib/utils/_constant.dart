@@ -17,6 +17,11 @@ Rx<String> API_BASE_URL = Rx<String>(dotenv.env['API_BASE_URL'] ?? 'Unknown');
 RxList<PostModel> ALL_POST_DATA = RxList<PostModel>([]);
 RxList<PetModel> ALL_PET_DATA = RxList<PetModel>([]);
 RxList<TaskModel> ALL_TODO_DATA = RxList<TaskModel>([]);
+
 RxList<Reminder> ALL_CALENDAR_DATA = RxList<Reminder>([]);
 
 RxList<CommentModel> COMMENT_DATA = RxList<CommentModel>([]);
+
+RxList<TaskModel> completedList = RxList([]);
+RxList<TaskModel> IncompletedList = RxList([]);
+RxString FILTERTYPE = 'ALL'.obs;

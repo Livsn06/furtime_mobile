@@ -4,7 +4,7 @@ import 'package:furtime/screens/post/createPost.dart';
 import 'package:furtime/screens/allpets/allpets_screen.dart';
 import 'package:furtime/screens/calendar/calendar_screen.dart';
 import 'package:furtime/screens/checklist/checklist.dart';
-import 'package:furtime/screens/profile/UNUSED_profile_screen.dart';
+import 'package:furtime/screens/profile/profile_screen.dart';
 import 'package:furtime/utils/_constant.dart';
 import 'package:get/get.dart';
 
@@ -66,8 +66,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 10.0),
                 child: PostCard(
                   postId: post.id!,
+                  profileImage: post.user?.photoUrl,
                   profileName:
-                      ("${post.user!.firstName} ${post.user!.lastName}"),
+                      ("${post.user!.firstName} ${post.user!.lastName} ${post.user?.email == CURRENT_USER.value.email ? "(You)" : ''}"),
                   postText: post.title!,
                   postdesc: post.description!,
                   imageUrl: post.image,

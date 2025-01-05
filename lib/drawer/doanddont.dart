@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class DosAndDontsScreen extends StatelessWidget {
   final String petType;
@@ -64,7 +65,11 @@ class DosAndDontsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dos and Don\'ts for $petType'),
+        backgroundColor: Colors.deepOrange,
+        foregroundColor: Colors.white,
+        centerTitle: true,
+        title: Text(
+            'Dos and Don\'ts for ${GetUtils.capitalizeFirst(petType)} Pets'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

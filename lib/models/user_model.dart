@@ -42,6 +42,7 @@ class UserModel {
     lastName = json['last_name'];
     email = json['email'];
     password = json['password'];
+    photoUrl = json['profile'];
     access_token = token;
   }
 
@@ -61,14 +62,19 @@ class UserModel {
     return json;
   }
 
+  Map<String, String> toUpdateJson() {
+    var json = <String, String>{};
+    json['first_name'] = arrangeName(firstName);
+    json['last_name'] = arrangeName(lastName);
+    return json;
+  }
+
   String arrangeEmail() {
     return email!.trim().toLowerCase();
   }
 
   String arrangeName(value) {
-    return GetUtils.capitalizeFirst(value.toString().toLowerCase())
-        .toString()
-        .trim();
+    return GetUtils.capitalizeFirst(value.toString()).toString().trim();
   }
 
   bool isPasswordMatch() {

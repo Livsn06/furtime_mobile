@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:furtime/controllers/checklist_screen_controller.dart';
@@ -134,6 +135,7 @@ class _addTaskState extends State<AddTask> {
 
                     int isSuccess =
                         await DatabaseHelper.instance.insertTodo(task.toJson());
+
                     Get.close(1);
 
                     if (isSuccess > 0) {
@@ -141,6 +143,26 @@ class _addTaskState extends State<AddTask> {
                         label: "Success",
                         text: "Task added successfully",
                       );
+                      AwesomeNotifications().createNotification(
+                        content: NotificationContent(
+                          id: 1,
+                          channelKey: 'basic_channel',
+                          title: 'Task Reminder',
+                          body: '${task.description}',
+                          notificationLayout: NotificationLayout.Default,
+                        ),
+                        schedule: NotificationCalendar(
+                          year: selectedDate.year,
+                          month: selectedDate.month,
+                          day: selectedDate.day,
+                          hour: selectedTime.hour,
+                          minute: selectedTime.minute,
+                          second: 0,
+                          millisecond: 0,
+                          timeZone: "Asia/Manila",
+                        ),
+                      );
+                      //
                       Get.close(3);
                       controller.allData();
                     } else {

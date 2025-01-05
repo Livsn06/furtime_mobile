@@ -28,6 +28,7 @@ class DatabaseHelper {
   String breed = 'breed';
   String gender = 'gender';
   String imagePath = 'image_path';
+  String petType = 'pet_type';
 
   //
 
@@ -61,6 +62,7 @@ class DatabaseHelper {
         $age INTEGER NOT NULL,
         $breed TEXT NOT NULL,
         $gender TEXT NOT NULL,
+        $petType TEXT NOT NULL,
         $imagePath TEXT
       )
     ''');
@@ -118,6 +120,11 @@ class DatabaseHelper {
     final copiedFile = await file.copy(newFilePath);
 
     return copiedFile.path;
+  }
+
+  Future<int> deletePet(int id) async {
+    final db = await database;
+    return await db.delete(myPetsTable, where: '$id = ?', whereArgs: [id]);
   }
 
 //

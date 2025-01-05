@@ -9,8 +9,6 @@ import '../models/post_model.dart';
 import '../models/task_model.dart';
 
 class TodoScreenController extends GetxController {
-  RxList<TaskModel> todayList = RxList([]);
-  RxList<TaskModel> tomorrowList = RxList([]);
   @override
   void onInit() {
     super.onInit();
@@ -21,16 +19,11 @@ class TodoScreenController extends GetxController {
     var data = await DatabaseHelper.instance.queryAllTodoRows();
     ALL_TODO_DATA.value = TaskModel.fromListJson(data);
     print("ALL TODO DATA: ${ALL_TODO_DATA.value.length}");
-
-    todayList.value = getTodayList();
-    tomorrowList.value = getTomorrowList();
   }
 
-  List<TaskModel> getTodayList() {
+  List<TaskModel> getCompleted() {
     var today = ALL_TODO_DATA.value.map((todo) {
-      if (DateTime.parse(todo.date!).day == DateTime.now().day &&
-          DateTime.parse(todo.date!).month == DateTime.now().month &&
-          DateTime.parse(todo.date!).year == DateTime.now().year) {
+      if (todo.isCompleted == true) {
         return todo;
       }
       return TaskModel();
@@ -39,11 +32,9 @@ class TodoScreenController extends GetxController {
     return finallist.isEmpty ? [] : finallist;
   }
 
-  List<TaskModel> getTomorrowList() {
+  List<TaskModel> getIncompleted() {
     var today = ALL_TODO_DATA.value.map((todo) {
-      if (DateTime.parse(todo.date!).day != DateTime.now().day &&
-          DateTime.parse(todo.date!).month == DateTime.now().month &&
-          DateTime.parse(todo.date!).year == DateTime.now().year) {
+      if (todo.isCompleted ?? false == false) {
         return todo;
       }
       return TaskModel();

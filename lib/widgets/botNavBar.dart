@@ -5,10 +5,10 @@ class BottomNavigationBarWidget extends StatefulWidget {
   final void Function(int) onTap;
 
   const BottomNavigationBarWidget({
-    Key? key,
+    super.key,
     required this.currentIndex,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   _BottomNavigationBarWidgetState createState() =>
@@ -31,7 +31,6 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
           backgroundColor: Colors.amber[400],
           selectedItemColor: Colors.red[700],
           items: [
-            
             BottomNavigationBarItem(
               icon: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
@@ -39,23 +38,25 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
                   return ScaleTransition(scale: animation, child: child);
                 },
                 child: widget.currentIndex == 0
-                    ? const Icon(Icons.checklist_rounded, key: ValueKey('checklist-selected'))
-                    : const Icon(Icons.checklist_rounded, key: ValueKey('checklist')),
+                    ? const Icon(Icons.checklist_rounded,
+                        key: ValueKey('checklist-selected'))
+                    : const Icon(Icons.checklist_rounded,
+                        key: ValueKey('checklist')),
               ),
               label: 'Checklist',
             ),
             BottomNavigationBarItem(
-              
               icon: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
                 transitionBuilder: (child, animation) {
                   return ScaleTransition(scale: animation, child: child);
-                }, 
+                },
                 child: widget.currentIndex == 1
-                    ? const Icon(Icons.calendar_month_rounded, key: ValueKey('calendar-selected'))
-                    : const Icon(Icons.calendar_month, key: ValueKey('calendar')),
+                    ? const Icon(Icons.calendar_month_rounded,
+                        key: ValueKey('calendar-selected'))
+                    : const Icon(Icons.calendar_month,
+                        key: ValueKey('calendar')),
               ),
-              
               label: 'Calendar',
             ),
             BottomNavigationBarItem(
@@ -78,11 +79,10 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
                 //       ),
                 //     );
                 //   },
-  
               ),
               label: 'Home',
             ),
-             BottomNavigationBarItem(
+            BottomNavigationBarItem(
               icon: GestureDetector(
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 300),
@@ -90,10 +90,10 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
                     return ScaleTransition(scale: animation, child: child);
                   },
                   child: widget.currentIndex == 3
-                      ? const Icon(Icons.pets_rounded, key: ValueKey('pets-selected'))
+                      ? const Icon(Icons.pets_rounded,
+                          key: ValueKey('pets-selected'))
                       : const Icon(Icons.pets_outlined, key: ValueKey('pets')),
                 ),
-            
               ),
               label: 'Pets',
             ),
@@ -104,12 +104,14 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget> {
                   return ScaleTransition(scale: animation, child: child);
                 },
                 child: widget.currentIndex == 4
-                    ? const Icon(Icons.person_outline, key: ValueKey('todo-selected'))
-                    : const Icon(Icons.person_outline_outlined, key: ValueKey('todo')),
+                    ? const Icon(Icons.person_outline,
+                        key: ValueKey('todo-selected'))
+                    : const Icon(Icons.person_outline_outlined,
+                        key: ValueKey('todo')),
               ),
               label: 'Profile',
             ),
-             BottomNavigationBarItem(
+            BottomNavigationBarItem(
               icon: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
                 transitionBuilder: (child, animation) {

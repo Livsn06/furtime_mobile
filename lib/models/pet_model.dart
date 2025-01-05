@@ -15,6 +15,7 @@ class PetModel {
   int? age;
   String? imagePath;
   XFile? imageFile;
+  String type;
 
   String? createdAt;
   PetModel({
@@ -25,6 +26,7 @@ class PetModel {
     this.age,
     this.imagePath,
     this.imageFile,
+    this.type = 'Others',
     this.createdAt,
   });
 
@@ -45,6 +47,7 @@ class PetModel {
       breed: json[dbHelper.breed],
       gender: json[dbHelper.gender],
       age: json[dbHelper.age],
+      type: json[dbHelper.petType],
       imagePath: json[dbHelper.imagePath],
     );
   }
@@ -57,6 +60,7 @@ class PetModel {
     json[dbHelper.breed] = breed.toString();
     json[dbHelper.gender] = gender.toString();
     json[dbHelper.age] = age.toString();
+    json[dbHelper.petType] = type.toString();
     json[dbHelper.imagePath] = await pickAndStoreImage();
     return json;
   }

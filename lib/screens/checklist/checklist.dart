@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:furtime/controllers/checklist_screen_controller.dart';
 import 'package:furtime/helpers/db_sqflite.dart';
+import 'package:furtime/models/task_model.dart';
 import 'package:furtime/utils/_constant.dart';
 import 'package:furtime/widgets/build_modal.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
-import 'package:awesome_notifications/awesome_notifications.dart';
 
 class ToDoScreen extends StatefulWidget {
   const ToDoScreen({super.key});
@@ -21,6 +20,25 @@ class _ToDoScreenState extends State<ToDoScreen> {
       init: TodoScreenController(),
       builder: (controller) {
         return Obx(() {
+          List<TaskModel>? data;
+          if (FILTERTYPE.value == 'ALL') {
+            data = ALL_TODO_DATA.value;
+          } else if (FILTERTYPE.value == 'TODAY') {
+            data = controller.getCompleted();
+          } else if (FILTERTYPE.value == 'TOMORROW') {
+            data = controller.getIncompleted();
+          }
+          if (data == null || data.isEmpty) {
+            return const Center(
+              child: Text('- No tasks found -',
+                  style: TextStyle(
+                      fontSize: 17,
+                      color: Colors.grey,
+                      fontStyle: FontStyle.italic)),
+            );
+          }
+
+          //
           return Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -28,9 +46,9 @@ class _ToDoScreenState extends State<ToDoScreen> {
               children: [
                 Expanded(
                   child: ListView.builder(
-                    itemCount: ALL_TODO_DATA.value.length,
+                    itemCount: data.length,
                     itemBuilder: (context, index) {
-                      final task = ALL_TODO_DATA.value[index];
+                      final task = data![index];
                       return Dismissible(
                         key: Key(task.id.toString()),
                         direction: DismissDirection.endToStart,
@@ -59,7 +77,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
                         },
                         child: InkWell(
                           onTap: () async {
-                            var task = ALL_TODO_DATA.value[index];
+                            var task = data![index];
                             task.isCompleted = !task.isCompleted!;
                             await DatabaseHelper.instance
                                 .updateTodo(task.toJson());
@@ -161,171 +179,6 @@ class TodoItem extends StatelessWidget {
                   ],
                 )
               : null,
-        ),
-      ),
-    );
-  }
-}
-
-class addTask extends StatefulWidget {
-  const addTask({super.key});
-
-  @override
-  _addTaskState createState() => _addTaskState();
-}
-
-class _addTaskState extends State<addTask> {
-  DateTime selectedDate = DateTime.now();
-  TimeOfDay selectedTime = TimeOfDay.now();
-  bool hasReminder = false;
-
-  final TextEditingController titleController = TextEditingController();
-  final TextEditingController descriptionController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _requestNotificationPermission();
-  }
-
-  void _requestNotificationPermission() async {
-    bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
-    if (!isAllowed) {
-      await AwesomeNotifications().requestPermissionToSendNotifications();
-    }
-  }
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-    if (pickedDate != null && pickedDate != selectedDate) {
-      setState(() {
-        selectedDate = pickedDate;
-      });
-    }
-  }
-
-  Future<void> _selectTime(BuildContext context) async {
-    final TimeOfDay? pickedTime = await showTimePicker(
-      context: context,
-      initialTime: selectedTime,
-    );
-    if (pickedTime != null && pickedTime != selectedTime) {
-      setState(() {
-        selectedTime = pickedTime;
-      });
-    }
-  }
-
-  void _scheduleNotification(String title, String body, DateTime scheduleTime) {
-    AwesomeNotifications().createNotification(
-      content: NotificationContent(
-        id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
-        channelKey: 'basic_channel',
-        title: title,
-        body: body,
-        notificationLayout: NotificationLayout.Default,
-      ),
-      schedule: NotificationCalendar(
-        year: scheduleTime.year,
-        month: scheduleTime.month,
-        day: scheduleTime.day,
-        hour: scheduleTime.hour,
-        minute: scheduleTime.minute,
-        second: 0,
-        millisecond: 0,
-        timeZone: "Asia/Manila",
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Text('Create Task', style: TextStyle(color: Colors.black)),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextField(
-                controller: titleController,
-                decoration: const InputDecoration(
-                  labelText: "Title",
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: descriptionController,
-                decoration: const InputDecoration(
-                  labelText: "Description",
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 3,
-              ),
-              const SizedBox(height: 20),
-              ListTile(
-                title: Text(
-                    "Select Date: ${DateFormat('yyyy-MM-dd').format(selectedDate)}"),
-                trailing: const Icon(Icons.calendar_today),
-                onTap: () => _selectDate(context),
-              ),
-              ListTile(
-                title: Text("Select Time: ${selectedTime.format(context)}"),
-                trailing: const Icon(Icons.access_time),
-                onTap: () => _selectTime(context),
-              ),
-              SwitchListTile(
-                title: const Text('Set Reminder'),
-                value: hasReminder,
-                onChanged: (value) {
-                  setState(() {
-                    hasReminder = value;
-                  });
-                },
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  final newTask = {
-                    'title': titleController.text,
-                    'description': descriptionController.text,
-                    'date': DateFormat('yyyy-MM-dd').format(selectedDate),
-                    'time': selectedTime.format(context),
-                    'isCompleted': false,
-                  };
-
-                  if (hasReminder) {
-                    final scheduleDateTime = DateTime(
-                      selectedDate.year,
-                      selectedDate.month,
-                      selectedDate.day,
-                      selectedTime.hour,
-                      selectedTime.minute,
-                    );
-                    _scheduleNotification(
-                      titleController.text,
-                      descriptionController.text,
-                      scheduleDateTime,
-                    );
-                  }
-
-                  Navigator.of(context).pop(newTask);
-                },
-                child: const Text('Save'),
-              ),
-            ],
-          ),
         ),
       ),
     );

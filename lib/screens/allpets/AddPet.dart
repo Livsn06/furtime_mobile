@@ -26,6 +26,7 @@ class _additionalPetState extends State<AdditionalPet> {
   final ageController = TextEditingController();
 
   String? gender;
+  String? type;
   XFile? image;
 
   Future<void> _pickImage() async {
@@ -66,6 +67,24 @@ class _additionalPetState extends State<AdditionalPet> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Text('To Add Pet, please enter the needed information.'),
+                const Gap(12),
+                DropdownButtonFormField<String>(
+                  value: type,
+                  items: ['Cat', 'Dog', 'Others'].map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value.toLowerCase(),
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      type = value;
+                    });
+                  },
+                  decoration: const InputDecoration(
+                    labelText: 'Pet Type',
+                  ),
+                ),
                 const Gap(12),
                 TextFormField(
                   controller: fullNameController,
@@ -145,6 +164,7 @@ class _additionalPetState extends State<AdditionalPet> {
                             age: int.parse(ageController.text),
                             breed: breedController.text,
                             gender: gender,
+                            type: type!,
                             imageFile: image,
                           );
                           var petAtJson = await newPet.createPetJson();

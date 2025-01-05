@@ -16,6 +16,7 @@ import '../helpers/image_parser.dart';
 
 class PostCard extends StatefulWidget {
   final String profileName;
+  final String? profileImage;
   final String datetime;
   final String postText;
   final String postdesc;
@@ -26,6 +27,7 @@ class PostCard extends StatefulWidget {
   const PostCard({
     super.key,
     required this.profileName,
+    required this.profileImage,
     required this.datetime,
     required this.postText,
     required this.postdesc,
@@ -59,7 +61,12 @@ class _PostCardState extends State<PostCard> {
                 children: [
                   CircleAvatar(
                     backgroundColor: Colors.grey[300],
-                    child: const Icon(Icons.person, color: Colors.white),
+                    backgroundImage: widget.profileImage != null
+                        ? NetworkImage(parseNetworkImage(widget.profileImage!))
+                        : null,
+                    child: widget.profileImage != null
+                        ? null
+                        : const Icon(Icons.person, color: Colors.white),
                   ),
                   const SizedBox(width: 12),
                   Column(
@@ -218,21 +225,20 @@ class _PostCardState extends State<PostCard> {
                         contentPadding: const EdgeInsets.all(8.0),
                         leading: CircleAvatar(
                           backgroundColor: Colors.grey[300],
-                          child: comment.user.photoUrl != null
-                              ? ImageNetwork(
-                                  image:
-                                      parseNetworkImage(comment.user.photoUrl!),
-                                  fitAndroidIos: BoxFit.cover,
-                                  height: 40,
-                                  width: 40,
+                          backgroundImage: comment.user.photoUrl != null
+                              ? NetworkImage(
+                                  parseNetworkImage(comment.user.photoUrl!),
                                 )
-                              : const Icon(Icons.person, color: Colors.grey),
+                              : null,
+                          child: comment.user.photoUrl == null
+                              ? const Icon(Icons.person, color: Colors.grey)
+                              : null,
                         ),
                         title: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '${comment.user.firstName} ${comment.user.lastName}',
+                              '${comment.user.firstName} ${comment.user.lastName} ${comment.user.email == CURRENT_USER.value.email ? "(You)" : ''}',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,

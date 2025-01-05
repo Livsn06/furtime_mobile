@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class TipsScreen extends StatelessWidget {
   final String petType;
 
-  TipsScreen({Key? key, required this.petType}) : super(key: key);
+  TipsScreen({super.key, required this.petType});
 
   final Map<String, List<String>> tips = {
     'dog': [
@@ -34,7 +35,10 @@ class TipsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('$petType Tips & Care'),
+        backgroundColor: Colors.deepOrange,
+        foregroundColor: Colors.white,
+        centerTitle: true,
+        title: Text('${GetUtils.capitalizeFirst(petType)} Pet Tips & Care'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -45,7 +49,7 @@ class TipsScreen extends StatelessWidget {
               elevation: 2.0,
               margin: const EdgeInsets.symmetric(vertical: 8.0),
               child: ListTile(
-                leading: Icon(Icons.check_circle, color: Colors.green),
+                leading: const Icon(Icons.check_circle, color: Colors.green),
                 title: Text(
                   selectedTips[index],
                   style: const TextStyle(fontSize: 16.0),

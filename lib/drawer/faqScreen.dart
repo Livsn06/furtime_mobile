@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import 'faqDetails.dart';
 
@@ -69,7 +70,7 @@ class FAQScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.deepOrange,
         foregroundColor: Colors.white,
-        title: Text('FAQs for $petType'),
+        title: Text('FAQs for ${GetUtils.capitalizeFirst(petType)} Pets'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

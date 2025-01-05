@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import '../models/user_model.dart';
 import 'package:http/http.dart' as http;
@@ -115,6 +116,46 @@ class AuthApi {
     } catch (e) {
       log(e.toString(), name: "API ERROR: ");
       return 'Something went wrong';
+    }
+  }
+
+  Future<bool> updateProfile(UserModel user, File? image) async {
+    String baseURL = "${API_BASE_URL.value}/api/profile/update";
+    String token = await AuthStorage.instance.getToken(
+      name: AuthStorage.instance.login_token,
+    );
+
+    try {
+      var request = http.MultipartRequest('POST', Uri.parse(baseURL));
+      request.headers.addAll({
+        "Accept": "application/json",
+        "ngrok-skip-browser-warning": "true",
+        "Authorization": "Bearer $token"
+      });
+
+      if (image != null) {
+        request.files
+            .add(await http.MultipartFile.fromPath('image', image.path));
+      }
+
+      request.fields.addAll(user.toUpdateJson());
+
+      var response = await request.send();
+
+      if (response.statusCode == 200) {
+        var data = await response.stream.bytesToString();
+        var result = jsonDecode(data);
+        log(result.toString(), name: "API RESULTS: ");
+        return true;
+      } else {
+        var data = await response.stream.bytesToString();
+        var result = jsonDecode(data);
+        log(result.toString(), name: "API RESULTS: ");
+        return false;
+      }
+    } catch (e) {
+      log(e.toString(), name: "API ERROR: ");
+      return false;
     }
   }
 }

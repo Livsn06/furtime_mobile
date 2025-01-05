@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:furtime/drawer/doanddont.dart';
+import 'package:furtime/drawer/faqScreen.dart';
 
 import 'package:furtime/screens/allpets/AddPet.dart';
 import 'package:furtime/screens/allpets/allpets_screen.dart';
@@ -8,9 +10,10 @@ import 'package:furtime/screens/checklist/checklist.dart';
 import 'package:furtime/screens/checklist/filter.dart';
 import 'package:furtime/screens/home/home_screen.dart';
 import 'package:furtime/screens/post/createPost.dart';
-import 'package:furtime/screens/profile/Profile.dart';
+import 'package:furtime/screens/profile/profile_screen.dart';
 import 'package:furtime/utils/_constant.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class ScreenControl extends StatefulWidget {
   const ScreenControl({super.key});
@@ -152,7 +155,18 @@ class _ScreenControlState extends State<ScreenControl> {
       floatingActionButton: _selectedIndex == 2
           ? FloatingActionButton(
               onPressed: () async {
-                Get.to(() => const AddTask());
+                var status = await Permission.notification.request();
+
+                if (status.isGranted) {
+                  print("Notification permission granted");
+                  Get.to(() => const AddTask());
+                } else if (status.isDenied) {
+                  print("Notification permission denied");
+                } else if (status.isPermanentlyDenied) {
+                  print(
+                      "Notification permission permanently denied. Please enable it from settings.");
+                  openAppSettings(); // Redirect to app settings
+                }
               },
               backgroundColor: Colors.deepOrange,
               child: const Icon(
@@ -200,7 +214,7 @@ class _ScreenControlState extends State<ScreenControl> {
             leading: const Icon(Icons.person),
             title: const Text('Profile'),
             onTap: () {
-              Get.to(() => const ProfileScreen());
+              Get.to(() => const ProfilesScreen());
             },
           ),
         ],
