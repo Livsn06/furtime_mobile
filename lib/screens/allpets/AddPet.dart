@@ -1,27 +1,30 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:furtime/helpers/db_sqflite.dart';
+import 'package:furtime/models/pet_model.dart';
+import 'package:furtime/widgets/build_modal.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:image_picker/image_picker.dart';
+
+import '../../utils/_constant.dart';
 
 class AdditionalPet extends StatefulWidget {
   const AdditionalPet({super.key});
 
   @override
-  State<AdditionalPet> createState() => _AdditionalPetState();
+  State<AdditionalPet> createState() => _additionalPetState();
 }
 
-class _AdditionalPetState extends State<AdditionalPet> {
+class _additionalPetState extends State<AdditionalPet> {
   final formKey = GlobalKey<FormState>();
-  final firstName = TextEditingController();
+  final fullNameController = TextEditingController();
+  final breedController = TextEditingController();
+  final ageController = TextEditingController();
 
-  final email = TextEditingController();
-  final password = TextEditingController();
-  final confirmPassword = TextEditingController();
-  bool showPassword = true;
-  final lastName = TextEditingController();
   String? gender;
   XFile? image;
 
@@ -35,14 +38,22 @@ class _AdditionalPetState extends State<AdditionalPet> {
 
   @override
   Widget build(BuildContext context) {
+    SCREEN_SIZE.value = MediaQuery.of(context).size;
+    APP_THEME.value = Theme.of(context);
+
+    //
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.amber[400],
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.deepOrange,
         elevation: 0,
         centerTitle: true,
         title: const Text(
           'Add Pet',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
       ),
       body: Container(
@@ -57,7 +68,7 @@ class _AdditionalPetState extends State<AdditionalPet> {
                 const Text('To Add Pet, please enter the needed information.'),
                 const Gap(12),
                 TextFormField(
-                  controller: firstName,
+                  controller: fullNameController,
                   decoration: setTextDecoration('Full Name'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -68,7 +79,7 @@ class _AdditionalPetState extends State<AdditionalPet> {
                 ),
                 const Gap(12),
                 TextFormField(
-                  controller: lastName,
+                  controller: ageController,
                   decoration: setTextDecoration('Age'),
                   keyboardType: TextInputType.number,
                   validator: (value) {
@@ -80,7 +91,7 @@ class _AdditionalPetState extends State<AdditionalPet> {
                 ),
                 const Gap(12),
                 TextFormField(
-                  controller: lastName,
+                  controller: breedController,
                   decoration: setTextDecoration('Breed'),
                   keyboardType: TextInputType.text,
                   validator: (value) {
@@ -125,10 +136,43 @@ class _AdditionalPetState extends State<AdditionalPet> {
                         title: 'Are you Sure?',
                         confirmBtnText: 'Confirm',
                         cancelBtnText: 'Cancel',
-                        onConfirmBtnTap: () {
-                          Navigator.of(context).pop();
-                          // Navigator.of(context).push(
-                          // MaterialPageRoute(builder: (_) => AllPets()));
+                        onConfirmBtnTap: () async {
+                          //
+                          showLoadingModal(
+                              label: "Adding Pet", text: "Please wait...");
+                          var newPet = PetModel(
+                            fullname: fullNameController.text,
+                            age: int.parse(ageController.text),
+                            breed: breedController.text,
+                            gender: gender,
+                            imageFile: image,
+                          );
+                          var petAtJson = await newPet.createPetJson();
+                          int isSuccess =
+                              await DatabaseHelper.instance.insert(petAtJson);
+                          print(isSuccess);
+                          if (isSuccess > 0) {
+                            showSuccessModal(
+                              label: "Success",
+                              text: "You have successfully added pet.",
+                              onPress: () {
+                                Get.close(4);
+                                Get.snackbar('Success',
+                                    "You have successfully added pet.");
+                              },
+                            );
+                          } else {
+                            Get.close(1);
+                            showFailedModal(
+                              label: "Error",
+                              text: "Failed to add pet.",
+                            );
+                          }
+
+                          var result =
+                              await DatabaseHelper.instance.queryAllRows();
+                          var pets = PetModel.fromListJson(result);
+                          ALL_PET_DATA.value = pets;
                         },
                         onCancelBtnTap: () {
                           Navigator.of(context).pop();

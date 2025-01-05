@@ -29,7 +29,7 @@ class SignupScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: APP_THEME.value.colorScheme.secondary,
+        backgroundColor: Colors.deepOrange,
         foregroundColor: Colors.white,
         centerTitle: true,
         title: const Text('Register'),
@@ -60,13 +60,14 @@ class SignupScreen extends StatelessWidget {
                   textFormInput(
                     label: 'First name',
                     controller: firstNameController,
+                    hintColor: Colors.grey,
                     isName: true,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your first name';
                       }
 
-                      if (!GetUtils.isAlphabetOnly(value)) {
+                      if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
                         return 'First name containing only letters';
                       }
 
@@ -79,12 +80,14 @@ class SignupScreen extends StatelessWidget {
                     label: 'Last name',
                     controller: lastNameController,
                     isName: true,
+                    hintColor: Colors.grey,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your last name';
                       }
 
-                      if (!GetUtils.isAlphabetOnly(value)) {
+                      // alpabhet with string
+                      if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
                         return 'Last name containing only letters';
                       }
 
@@ -96,6 +99,7 @@ class SignupScreen extends StatelessWidget {
                     label: 'Email',
                     isEmail: true,
                     controller: emailController,
+                    hintColor: Colors.grey,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your email';
@@ -116,6 +120,7 @@ class SignupScreen extends StatelessWidget {
                     label: 'Password',
                     isPassword: true,
                     controller: passwordController,
+                    hintColor: Colors.grey,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your password';
@@ -135,6 +140,7 @@ class SignupScreen extends StatelessWidget {
                     label: 'Confirm Password',
                     isPassword: true,
                     controller: confirmPasswordController,
+                    hintColor: Colors.grey,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please confirm your password';
@@ -152,6 +158,7 @@ class SignupScreen extends StatelessWidget {
                   //
                   customButton(
                     label: 'Sign Up',
+                    color: Colors.deepOrange,
                     onPress: () {
                       submitCredentials();
                     },

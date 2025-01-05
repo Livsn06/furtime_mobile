@@ -89,4 +89,32 @@ class AuthApi {
       return 'Something went wrong';
     }
   }
+
+  Future<dynamic> logout() async {
+    String baseURL = "${API_BASE_URL.value}/api/logout";
+    String token = await AuthStorage.instance.getToken(
+      name: AuthStorage.instance.login_token,
+    );
+    try {
+      var response = await http.post(
+        Uri.parse(baseURL),
+        headers: {
+          "Accept": "application/json",
+          "ngrok-skip-browser-warning": "true",
+          "Authorization": "Bearer $token"
+        },
+      );
+      var result = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        log(result.toString(), name: "API RESULTS: ");
+        return true;
+      }
+
+      log(result.toString(), name: "API RESULTS: ");
+      return result['message'].toString();
+    } catch (e) {
+      log(e.toString(), name: "API ERROR: ");
+      return 'Something went wrong';
+    }
+  }
 }

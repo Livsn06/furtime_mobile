@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:furtime/_screenControls.dart';
 import 'package:furtime/helpers/auth_api.dart';
 import 'package:furtime/models/user_model.dart';
 import 'package:furtime/screens/auth/signup_screen.dart';
@@ -28,7 +29,7 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: APP_THEME.value.colorScheme.secondary,
+        backgroundColor: Colors.deepOrange,
         foregroundColor: Colors.white,
         centerTitle: true,
         title: const Text('Login'),
@@ -59,6 +60,7 @@ class LoginScreen extends StatelessWidget {
                     label: 'Email',
                     isEmail: true,
                     controller: emailController,
+                    hintColor: Colors.grey,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your email';
@@ -79,6 +81,7 @@ class LoginScreen extends StatelessWidget {
                     label: 'Password',
                     isPassword: true,
                     controller: passwordController,
+                    hintColor: Colors.grey,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your password';
@@ -98,6 +101,7 @@ class LoginScreen extends StatelessWidget {
                   //
                   customButton(
                     label: 'Login',
+                    color: Colors.deepOrange,
                     onPress: () {
                       submitCredentials();
                     },
@@ -134,7 +138,7 @@ class LoginScreen extends StatelessWidget {
     var result = await user.loginCredentials();
 
     if (result == true) {
-      Get.offAll(() => HomeScreen());
+      Get.offAll(() => const ScreenControl());
       return;
     }
 

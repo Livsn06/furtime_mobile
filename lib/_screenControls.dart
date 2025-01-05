@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:furtime/screens/home/createPost.dart';
+
 import 'package:furtime/screens/allpets/AddPet.dart';
 import 'package:furtime/screens/allpets/allpets_screen.dart';
 import 'package:furtime/screens/calendar/calendar_screen.dart';
@@ -7,6 +7,9 @@ import 'package:furtime/screens/checklist/addScreen.dart';
 import 'package:furtime/screens/checklist/checklist.dart';
 import 'package:furtime/screens/checklist/filter.dart';
 import 'package:furtime/screens/home/home_screen.dart';
+import 'package:furtime/screens/post/createPost.dart';
+import 'package:furtime/screens/profile/Profile.dart';
+import 'package:furtime/utils/_constant.dart';
 import 'package:get/get.dart';
 
 class ScreenControl extends StatefulWidget {
@@ -22,7 +25,7 @@ class _ScreenControlState extends State<ScreenControl> {
   // List of widgets corresponding to each tab
   final List<Widget> _screens = [
     const HomeScreen(),
-    const AllPetsScreen(),
+    const AllPetScreen(),
     const ToDoScreen(),
     const CalendarScreen(),
   ];
@@ -53,69 +56,79 @@ class _ScreenControlState extends State<ScreenControl> {
   final List<AppBar> _appBars = [
     //Home
     AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.amber,
-        elevation: 0,
-        title: const Text(
-          'Dashboard',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+      foregroundColor: Colors.white,
+      backgroundColor: Colors.deepOrange,
+      elevation: 0,
+      title: const Text(
+        'Dashboard',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
         ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Get.to(() => const CreatePost());
-            },
-            icon: const Icon(Icons.add_to_photos_outlined),
-            iconSize: 35,
-          )
-        ]),
+      ),
+      actions: [
+        IconButton(
+          onPressed: () {
+            Get.to(() => const Createpost());
+          },
+          icon: const Icon(Icons.add_circle_outlined),
+          iconSize: 35,
+        )
+      ],
+    ),
 
     // All Pets
     AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.amber,
-        elevation: 0,
-        title: const Text(
-          'My Pets',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Get.to(() => const AdditionalPet());
-            },
-            icon: const Icon(Icons.add_to_photos_outlined),
-            iconSize: 35,
-          )
-        ]),
+      foregroundColor: Colors.white,
+      backgroundColor: Colors.deepOrange,
+      elevation: 0,
+      title: const Text(
+        'My Pets',
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
+      actions: [
+        IconButton(
+          onPressed: () {
+            Get.to(() => const AdditionalPet(),
+                transition: Transition.fadeIn, preventDuplicates: true);
+          },
+          icon: const Icon(Icons.add_circle_outlined),
+          iconSize: 35,
+        )
+      ],
+    ),
 
     // Check List
     AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.amber,
-        elevation: 0,
-        title: const Text(
-          'Check List',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+      foregroundColor: Colors.white,
+      backgroundColor: Colors.deepOrange,
+      elevation: 0,
+      title: const Text(
+        'Check List',
+        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+      ),
+      actions: [
+        TextButton.icon(
+          onPressed: () {
+            Get.to(() => filterScreen(applyFilter: (bool? applyFilter) {}));
+          },
+          icon: const Icon(Icons.filter_list, color: Colors.white),
+          label: const Text("Filter", style: TextStyle(color: Colors.white)),
         ),
-        actions: [
-          TextButton.icon(
-            onPressed: () {
-              Get.to(() => FilterScreen(applyFilter: (bool? applyFilter) {}));
-            },
-            icon: const Icon(Icons.filter_list, color: Colors.black),
-            label: const Text("Filter", style: TextStyle(color: Colors.black)),
-          ),
-        ]),
+      ],
+    ),
 
     // Calendar
     AppBar(
-      automaticallyImplyLeading: false,
-      backgroundColor: Colors.amber,
+      foregroundColor: Colors.white,
+      backgroundColor: Colors.deepOrange,
       elevation: 0,
+      centerTitle: true,
       title: const Text(
         'Calendar',
-        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
       ),
     ),
   ];
@@ -129,18 +142,23 @@ class _ScreenControlState extends State<ScreenControl> {
 
   @override
   Widget build(BuildContext context) {
+    APP_THEME.value = Theme.of(context);
     return Scaffold(
+      drawer: buildDrawer(),
       appBar: _appBars[_selectedIndex],
       body: _screens[_selectedIndex],
 
       //FLoating Action Button
       floatingActionButton: _selectedIndex == 2
           ? FloatingActionButton(
-              onPressed: () {
+              onPressed: () async {
                 Get.to(() => const AddTask());
               },
-              backgroundColor: Colors.grey,
-              child: const Icon(Icons.add_outlined),
+              backgroundColor: Colors.deepOrange,
+              child: const Icon(
+                Icons.add_outlined,
+                color: Colors.white,
+              ),
             )
           : null,
       //
@@ -153,6 +171,39 @@ class _ScreenControlState extends State<ScreenControl> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         items: _bottomNavItems,
+      ),
+    );
+  }
+
+  Drawer buildDrawer() {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          const DrawerHeader(
+            decoration: BoxDecoration(
+              color: Colors.deepOrange,
+            ),
+            child: Align(
+              alignment: Alignment.center,
+              child: Text(
+                'FurTime',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.person),
+            title: const Text('Profile'),
+            onTap: () {
+              Get.to(() => const ProfileScreen());
+            },
+          ),
+        ],
       ),
     );
   }

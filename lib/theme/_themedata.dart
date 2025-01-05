@@ -8,7 +8,7 @@ ThemeData customThemeData() {
       secondary: Colors.deepOrange,
       surface: Colors.white,
       error: Colors.red,
-      onPrimary: Colors.black,
+      onPrimary: Colors.grey,
       onSecondary: Colors.white,
       onSurface: Colors.black,
       primaryFixedDim: Color(0xFF7D7D7D),

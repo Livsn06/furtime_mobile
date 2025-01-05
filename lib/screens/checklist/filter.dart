@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class FilterScreen extends StatefulWidget {
+class filterScreen extends StatefulWidget {
   final Function(bool?) applyFilter;
-  const FilterScreen({super.key, required this.applyFilter});
+  const filterScreen({super.key, required this.applyFilter});
   @override
-  _FilterScreenState createState() => _FilterScreenState();
+  _filterScreenState createState() => _filterScreenState();
 }
 
-class _FilterScreenState extends State<FilterScreen> {
+class _filterScreenState extends State<filterScreen> {
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
   bool? isCompleted;

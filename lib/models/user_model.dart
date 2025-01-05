@@ -1,9 +1,9 @@
-
 import 'package:get/get.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
 
 import '../helpers/auth_api.dart';
 import '../storage/auth_storage.dart';
+import '../utils/_constant.dart';
 import '../widgets/build_modal.dart';
 
 class UserModel {
@@ -36,6 +36,7 @@ class UserModel {
   }
 
   UserModel.fromJson(Map<String, dynamic> json, String token) {
+    json = json ?? {};
     uid = json['uid'];
     firstName = json['first_name'];
     lastName = json['last_name'];
@@ -93,6 +94,7 @@ class UserModel {
         token: result.access_token,
       );
 
+      CURRENT_USER.value = result;
       //
       return true;
     } else if (result == "User not found") {

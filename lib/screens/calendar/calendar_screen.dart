@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:furtime/data/reminderNotif.dart';
-import 'package:furtime/screens/allpets/allpets_screen.dart';
+import 'package:furtime/controllers/checklist_screen_controller.dart';
+import 'package:furtime/models/reminderNotif.dart';
 import 'package:furtime/screens/checklist/checklist.dart';
-import 'package:furtime/screens/home/home_screen.dart';
-import 'package:furtime/screens/profile/profile_screen.dart';
+import 'package:furtime/screens/checklist/editScreen.dart';
+
+import 'package:furtime/utils/_constant.dart';
+import 'package:get/get.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:table_calendar/table_calendar.dart';
+
+import '../../controllers/calendar_controller.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -16,73 +20,79 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
-  final List<Reminder> reminders =
-      prelistedReminders; // Use the predefined reminders
+  // Use the predefined reminders
   DateTime _selectedDay = DateTime.now(); // Keep track of the selected day
-
+  var todoController = Get.put(TodoScreenController());
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        TableCalendar(
-          firstDay: DateTime.utc(1990, 1, 1),
-          lastDay: DateTime.utc(2030, 12, 31),
-          focusedDay: _selectedDay,
-          calendarFormat: CalendarFormat.month,
-          eventLoader: (day) => _getEventsForDay(day),
-          selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
-          onDaySelected: (selectedDay, focusedDay) {
-            setState(() {
-              _selectedDay = selectedDay;
-            });
+    SCREEN_SIZE.value = MediaQuery.of(context).size;
+    APP_THEME.value = Theme.of(context);
 
-            final remindersForDate = _getEventsForDay(selectedDay);
+    ///
+    return GetBuilder(
+        init: CalendarController(),
+        builder: (controller) {
+          return Column(
+            children: [
+              TableCalendar(
+                firstDay: DateTime.utc(1990, 1, 1),
+                lastDay: DateTime.utc(2030, 12, 31),
+                focusedDay: _selectedDay,
+                calendarFormat: CalendarFormat.month,
+                eventLoader: (day) => _getEventsForDay(day),
+                selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
+                onDaySelected: (selectedDay, focusedDay) {
+                  setState(() {
+                    _selectedDay = selectedDay;
+                  });
 
-            if (remindersForDate.isNotEmpty) {
-              for (var reminder in remindersForDate) {
-                _showReminderDialog(reminder);
-              }
-            } else {
-              QuickAlert.show(
-                context: context,
-                type: QuickAlertType.info,
-                title: 'No Reminders',
-                text: 'No reminders found for this date.',
-                confirmBtnText: 'OKAY',
-              );
-            }
-          },
-          headerStyle: const HeaderStyle(
-            formatButtonVisible: false, // Hides the format button
-            titleCentered: true, // Centers the title
-            leftChevronVisible: true, // Shows the left chevron
-            rightChevronVisible: true, // Shows the right chevron
-            titleTextStyle: TextStyle(
-              fontSize: 20, // Font size of the title
-              fontWeight: FontWeight.bold, // Font weigh
-            ),
-            // decoration: BoxDecoration(
-            //   border: Border.all(
-            //   color: Colors.black.withOpacity(0.8), // Color of the border
-            //   width: 1, // Width of the border
-            // ),
-            // color: Colors.white,
-            // )
-          ),
-        ),
-        const SizedBox(height: 10),
-        Expanded(
-          child: _buildRemindersList(),
-        ),
-      ],
-    );
+                  final remindersForDate = _getEventsForDay(selectedDay);
+
+                  if (remindersForDate.isNotEmpty) {
+                    for (var reminder in remindersForDate) {
+                      _showReminderDialog(reminder);
+                    }
+                  } else {
+                    QuickAlert.show(
+                      context: context,
+                      type: QuickAlertType.info,
+                      title: 'No Reminders',
+                      text: 'No reminders found for this date.',
+                      confirmBtnText: 'OKAY',
+                    );
+                  }
+                },
+                headerStyle: const HeaderStyle(
+                  formatButtonVisible: false, // Hides the format button
+                  titleCentered: true, // Centers the title
+                  leftChevronVisible: true, // Shows the left chevron
+                  rightChevronVisible: true, // Shows the right chevron
+                  titleTextStyle: TextStyle(
+                    fontSize: 20, // Font size of the title
+                    fontWeight: FontWeight.bold, // Font weigh
+                  ),
+                  // decoration: BoxDecoration(
+                  //   border: Border.all(
+                  //   color: Colors.black.withOpacity(0.8), // Color of the border
+                  //   width: 1, // Width of the border
+                  // ),
+                  // color: Colors.white,
+                  // )
+                ),
+              ),
+              const SizedBox(height: 10),
+              Expanded(
+                child: _buildRemindersList(),
+              ),
+            ],
+          );
+        });
   }
 
   /// Fetches reminders for a specific day
   List<Reminder> _getEventsForDay(DateTime day) {
-    return reminders
-        .where((reminder) =>
-            isSameDay(reminder.dateTime, day)) // Compares only the date
+    return ALL_CALENDAR_DATA.value
+        .where((reminder) => isSameDay(day, reminder.dateTime))
         .toList();
   }
 
@@ -144,12 +154,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
         context: context,
         type: QuickAlertType.confirm,
         title: 'Edit Reminder',
-        text: 'This is where the edit functionality will go.',
+        text: 'Are you sure you want to edit this reminder?',
         confirmBtnText: 'Confirm',
         cancelBtnText: 'Cancel',
         onConfirmBtnTap: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (_) => const ToDoScreen()));
+          Navigator.pop(context);
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => EditTask(task: reminder.taskModel)));
         },
         onCancelBtnTap: () {
           Navigator.pop(context);

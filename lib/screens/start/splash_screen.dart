@@ -21,7 +21,7 @@ class SplashScreen extends StatelessWidget {
       //
       builder: (controller) {
         return Scaffold(
-          backgroundColor: APP_THEME.value.colorScheme.secondary,
+          backgroundColor: Colors.deepOrange,
           body: Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,

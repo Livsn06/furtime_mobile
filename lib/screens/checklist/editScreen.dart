@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:furtime/controllers/calendar_controller.dart';
 import 'package:furtime/controllers/checklist_screen_controller.dart';
+import 'package:furtime/models/reminderNotif.dart';
 import 'package:furtime/models/task_model.dart';
 import 'package:furtime/widgets/build_form.dart';
 import 'package:furtime/widgets/build_modal.dart';
@@ -10,15 +12,32 @@ import 'package:intl/intl.dart';
 
 import '../../helpers/db_sqflite.dart';
 
-class AddTask extends StatefulWidget {
-  const AddTask({super.key});
-
+class EditTask extends StatefulWidget {
+  EditTask({super.key, required this.task});
+  TaskModel task;
   @override
   _addTaskState createState() => _addTaskState();
 }
 
-class _addTaskState extends State<AddTask> {
+class _addTaskState extends State<EditTask> {
+  @override
+  void initState() {
+    // TODO: implement initState
+
+    var formatTime = DateFormat('HH:mm').parse(widget.task.time!);
+    var time = DateTime.parse(formatTime.toString());
+
+    //
+    titleController.text = widget.task.title!;
+    descriptionController.text = widget.task.description!;
+    selectedDate = DateTime.parse(widget.task.date!);
+
+    selectedTime = TimeOfDay.fromDateTime(time);
+    super.initState();
+  }
+
   var taskController = Get.put(TodoScreenController());
+  var reminderController = Get.put(CalendarController());
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
   bool hasReminder = false;
@@ -62,7 +81,7 @@ class _addTaskState extends State<AddTask> {
         centerTitle: true,
         elevation: 0,
         title: const Text(
-          'Create Task',
+          'Edit Task',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -114,16 +133,18 @@ class _addTaskState extends State<AddTask> {
               // ),
               const SizedBox(height: 20),
               customButton(
-                label: "Add Task",
+                label: "Update Task",
                 color: Colors.deepOrange,
                 onPress: () async {
                   showConfirmModal(context,
-                      label: "Add Task",
-                      text: "Are you sure you want to add this task?",
+                      label: "Update Task",
+                      text: "Are you sure you want to update this task?",
                       onConfirm: () async {
-                    showLoadingModal(label: "Add Task", text: "Please wait...");
+                    showLoadingModal(
+                        label: "Update Task", text: "Please wait...");
 
                     var task = TaskModel(
+                      id: widget.task.id,
                       title: titleController.text,
                       description: descriptionController.text,
                       date: DateFormat('yyyy-MM-dd').format(selectedDate),
@@ -133,16 +154,17 @@ class _addTaskState extends State<AddTask> {
                     );
 
                     int isSuccess =
-                        await DatabaseHelper.instance.insertTodo(task.toJson());
+                        await DatabaseHelper.instance.updateTodo(task.toJson());
                     Get.close(1);
 
                     if (isSuccess > 0) {
                       showSuccessModal(
                         label: "Success",
-                        text: "Task added successfully",
+                        text: "Task updated successfully",
                       );
                       Get.close(3);
                       controller.allData();
+                      reminderController.allData();
                     } else {
                       showFailedModal(
                         label: "Error",

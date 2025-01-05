@@ -1,26 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:furtime/helpers/auth_api.dart';
 import 'package:furtime/screens/allpets/allpets_screen.dart';
 import 'package:furtime/screens/auth/login_screen.dart';
 import 'package:furtime/screens/auth/signup_screen.dart';
 import 'package:furtime/screens/calendar/calendar_screen.dart';
 import 'package:furtime/screens/checklist/checklist.dart';
 import 'package:furtime/screens/home/home_screen.dart';
+import 'package:furtime/utils/_constant.dart';
+import 'package:furtime/widgets/build_modal.dart';
 import 'package:get/route_manager.dart';
 
-class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+class ProfilesScreen extends StatefulWidget {
+  const ProfilesScreen({super.key});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<ProfilesScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends State<ProfilesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.amber[400],
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.deepOrange,
         title: const Text(
           'Profile',
           style: TextStyle(
@@ -28,42 +31,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
         centerTitle: true,
-      ),
-      endDrawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            const DrawerHeader(
-              child: Center(
-                child: Text(
-                  'Profile | FurTime',
-                  style: TextStyle(fontSize: 32.0),
-                ),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.info_outline),
-              title: const Text('About'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.pageview_outlined),
-              title: const Text('Trivia'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.perm_device_information_outlined),
-              title: const Text('Terms and Conditions'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -90,37 +57,53 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: Column(
                   children: [
                     CircleAvatar(
-                      backgroundColor: Colors.blueAccent,
-                      radius: 85.0,
-                      child: ClipOval(
-                        child: Image.asset(
-                          "assets/images/ttalgi.jpg",
-                          width: 200,
-                          height: 200,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
+                        backgroundColor: Colors.blueAccent,
+                        radius: 85.0,
+                        child: ClipOval(
+                          child: CURRENT_USER.value.photoUrl != null
+                              ? Image.network(
+                                  CURRENT_USER.value.photoUrl!,
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.asset(
+                                  "assets/images/ttalgi.jpg",
+                                  width: 200,
+                                  height: 200,
+                                  fit: BoxFit.cover,
+                                ),
+                        )),
                   ],
                 ),
               ),
               const SizedBox(height: 16),
               // Name of the user
-              const Text(
-                'KIMI NO NAWA',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              Text(
+                '${CURRENT_USER.value.firstName} ${CURRENT_USER.value.lastName}',
+                style:
+                    const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Secret@example.com',
-                style: TextStyle(fontSize: 16, color: Colors.grey),
+              Text(
+                '${CURRENT_USER.value.email}',
+                style: const TextStyle(fontSize: 16, color: Colors.grey),
               ),
               const SizedBox(height: 24),
               // Logout Button
               ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (_) => LoginScreen()));
+                onPressed: () async {
+                  // Logout the user
+                  showLoadingModal(label: "Logout", text: "Please wait...");
+                  var result = await AuthApi.instance.logout();
+                  Get.close(1);
+                  if (result == true) {
+                    Get.snackbar('Success', "You have successfully logout.");
+                    Get.offAll(() => LoginScreen());
+                  } else {
+                    showFailedModal(
+                      label: "Error",
+                      text: result.toString(),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.red,

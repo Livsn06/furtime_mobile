@@ -1,128 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:furtime/controllers/pet_screen_controller.dart';
 import 'package:furtime/data/PetCard.dart';
-import 'package:furtime/screens/allpets/AddPet.dart';
-import 'package:furtime/screens/calendar/calendar_screen.dart';
-import 'package:furtime/screens/checklist/checklist.dart';
-import 'package:furtime/screens/home/home_screen.dart';
-import 'package:furtime/screens/profile/profile_screen.dart';
+import 'package:furtime/utils/_constant.dart';
+import 'package:get/get.dart';
 
-class AllPetsScreen extends StatefulWidget {
-  const AllPetsScreen({super.key});
+class AllPetScreen extends StatefulWidget {
+  const AllPetScreen({super.key});
 
   @override
-  State<AllPetsScreen> createState() => _AllPetsScreenState();
+  State<AllPetScreen> createState() => _AllPetScreenState();
 }
 
-class _AllPetsScreenState extends State<AllPetsScreen> {
+class _AllPetScreenState extends State<AllPetScreen> {
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(16.0),
-      children: [
-        // Banner Section
-        Container(
-          padding: const EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-            color: Colors.orange[100],
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            children: [
-              Image.asset(
-                'assets/images/ttalgi.jpg', // Replace with your image asset
-                height: 60,
-                width: 60,
-              ),
-              const SizedBox(width: 12),
-              const Expanded(
-                child: Text(
-                  'We care about your PET',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+    SCREEN_SIZE.value = MediaQuery.of(context).size;
+    APP_THEME.value = Theme.of(context);
+
+    //
+    return GetBuilder<PetScreenController>(
+        init: PetScreenController(),
+        builder: (controller) {
+          return Obx(
+            () {
+              if (ALL_PET_DATA.value.isEmpty) {
+                return Center(
+                  child: Text(
+                    '- No pets added yet -',
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[600],
+                        fontStyle: FontStyle.italic),
                   ),
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        const SizedBox(height: 16.0),
-        // Pet Cards
-        PetCard(
-          imageUrl: "assets/images/ash.jpg", // Replace with your image asset
-          petName: "Ash",
-          age: "2" " Yrs old",
-          breed: "Persian",
-          gender: 'Female',
-        ),
-        const SizedBox(height: 16.0),
-        PetCard(
-          imageUrl: "assets/images/ashh.jpg", // Replace with your image asset
-          petName: "Ash",
-          age: "2" " Yrs old",
-          breed: "Persian",
-          gender: 'Female',
-        ),
-      ],
-    );
+                );
+              }
+              return ListView.builder(
+                itemCount: ALL_PET_DATA.value.length,
+                itemBuilder: (context, index) {
+                  var pet = ALL_PET_DATA.value[index];
+                  return PetCard(
+                    imageUrl: pet.imagePath!, // Replace with your image asset
+                    petName: pet.fullname!,
+                    age: "${pet.age}" " Yrs old",
+                    breed: pet.breed!,
+                    gender: pet.gender!,
+                  );
+                },
+              );
+            },
+          );
+        });
   }
-}
-
-@override
-Widget build(BuildContext context) {
-  return SingleChildScrollView(
-    child: Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
-      ),
-      elevation: 3.0,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 12),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.asset(
-                'imageUrl', // Replace with your image asset
-                height: 160,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-            ),
-            const Row(
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'profileName',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                    ),
-                    Text(
-                      'location',
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            const Text(
-              'postText',
-              style: TextStyle(fontSize: 14),
-            ),
-          ],
-        ),
-      ),
-    ),
-  );
 }

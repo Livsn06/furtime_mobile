@@ -7,10 +7,13 @@ Widget textFormInput({
   isEmail = false,
   isPassword = false,
   isName = false,
+  maxLine = 1,
+  Color? hintColor,
   String? Function(String?)? validator,
 }) {
   return TextFormField(
     controller: controller,
+    maxLines: maxLine,
     decoration: InputDecoration(
       hintText: label,
       border: const OutlineInputBorder(),
@@ -21,8 +24,10 @@ Widget textFormInput({
               : isName
                   ? const Icon(Icons.person_outline)
                   : null,
-      prefixIconColor: APP_THEME.value.colorScheme.primaryFixedDim,
-      hintStyle: TextStyle(color: APP_THEME.value.colorScheme.primaryFixedDim),
+      prefixIconColor: hintColor ?? APP_THEME.value.colorScheme.primaryFixedDim,
+      hintStyle: TextStyle(
+        color: hintColor ?? APP_THEME.value.colorScheme.primaryFixedDim,
+      ),
       constraints: BoxConstraints(
         maxWidth: SCREEN_SIZE.value.width,
         minWidth: SCREEN_SIZE.value.width / 2,
@@ -51,8 +56,8 @@ Widget authNavigation({label, text, Function()? onPress}) {
         onPressed: onPress,
         child: Text(
           label,
-          style: TextStyle(
-            color: APP_THEME.value.colorScheme.secondary,
+          style: const TextStyle(
+            color: Colors.deepOrange,
             fontWeight: FontWeight.bold,
           ),
         ),
