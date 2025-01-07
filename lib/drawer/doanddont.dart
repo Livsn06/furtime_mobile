@@ -68,8 +68,7 @@ class DosAndDontsScreen extends StatelessWidget {
         backgroundColor: Colors.deepOrange,
         foregroundColor: Colors.white,
         centerTitle: true,
-        title: Text(
-            'Dos and Don\'ts for ${GetUtils.capitalizeFirst(petType)} Pets'),
+        title: const Text('Dos and Don\'ts'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

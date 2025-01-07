@@ -15,6 +15,7 @@ import 'package:intl/intl.dart';
 import '../helpers/image_parser.dart';
 
 class PostCard extends StatefulWidget {
+  final int userId;
   final String profileName;
   final String? profileImage;
   final String datetime;
@@ -26,6 +27,7 @@ class PostCard extends StatefulWidget {
 
   const PostCard({
     super.key,
+    required this.userId,
     required this.profileName,
     required this.profileImage,
     required this.datetime,
@@ -48,12 +50,13 @@ class _PostCardState extends State<PostCard> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Card(
+        color: Colors.white,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0),
+          borderRadius: BorderRadius.circular(3.0),
         ),
-        elevation: 3.0,
+        elevation: 1.0,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(12.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -87,6 +90,62 @@ class _PostCardState extends State<PostCard> {
                         ),
                       ),
                     ],
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    padding: const EdgeInsets.all(0),
+                    icon: const Icon(
+                      Icons.more_vert,
+                      color: Colors.grey,
+                    ),
+                    onPressed: () async {
+                      await showModalBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          return BottomSheet(
+                              backgroundColor: Colors.white,
+                              onClosing: () {
+                                print('onClosing');
+                              },
+                              builder: (context) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Visibility(
+                                        visible: CURRENT_USER.value.uid ==
+                                            widget.userId,
+                                        child: ListTile(
+                                          leading: const Icon(Icons.delete,
+                                              color: Colors.red),
+                                          title: const Text(
+                                            'Delete',
+                                            style: TextStyle(color: Colors.red),
+                                          ),
+                                          onTap: () {
+                                            showConfirmModal(context,
+                                                label: 'Delete Post',
+                                                text:
+                                                    'Post deleted successfully',
+                                                onConfirm: () async {
+                                              await PostApi.instance.deletePost(
+                                                  postId: widget.postId);
+                                              Get.snackbar('Success',
+                                                  'Post deleted successfully');
+                                              postsController.allData();
+                                              Get.close(2);
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              });
+                        },
+                      );
+                    },
                   ),
                 ],
               ),
@@ -131,8 +190,18 @@ class _PostCardState extends State<PostCard> {
                       onTap: () async {
                         ///
 
-                        showLoadingModal(
-                            label: "Loading", text: "Please wait...");
+                        Get.defaultDialog(
+                            backgroundColor: Colors.transparent,
+                            barrierDismissible: false,
+                            title: '',
+                            content: const Column(
+                              children: [
+                                CircularProgressIndicator(
+                                  color: Colors.grey,
+                                  strokeWidth: 3,
+                                ),
+                              ],
+                            ));
                         await commentsController.allData(widget.postId);
                         Get.close(1);
                         showComments();

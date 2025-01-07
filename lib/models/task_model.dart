@@ -15,6 +15,8 @@ class TaskModel {
   String? time;
   bool? isCompleted;
   bool? reminder;
+  int user_ID = 1;
+  int notificationID = 0;
 
   TaskModel({
     this.id,
@@ -24,6 +26,8 @@ class TaskModel {
     this.time,
     this.isCompleted,
     this.reminder,
+    this.user_ID = 0,
+    this.notificationID = 0,
   });
 
   static List<TaskModel> fromListJson(List<Map<String, dynamic>> json) {
@@ -44,6 +48,8 @@ class TaskModel {
       time: json[dbHelper.todoTime],
       isCompleted: json[dbHelper.todoIsCompleted] == 1 ? true : false,
       reminder: json[dbHelper.hasReminder] == 1 ? true : false,
+      user_ID: json[dbHelper.todo_user_ID],
+      notificationID: json[dbHelper.notification_ID],
     );
   }
 
@@ -57,6 +63,8 @@ class TaskModel {
       dbHelper.todoTime: time,
       dbHelper.todoIsCompleted: isCompleted == true ? 1 : 0,
       dbHelper.hasReminder: reminder == true ? 1 : 0,
+      dbHelper.todo_user_ID: user_ID,
+      dbHelper.notification_ID: notificationID
     };
   }
 }

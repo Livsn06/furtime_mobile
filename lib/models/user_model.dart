@@ -12,7 +12,7 @@ class UserModel {
   String? email;
   String? password;
   String? confirmPassword;
-  String? uid;
+  int? uid;
   String? photoUrl;
 
   String? access_token;
@@ -37,7 +37,7 @@ class UserModel {
 
   UserModel.fromJson(Map<String, dynamic> json, String token) {
     json = json ?? {};
-    uid = json['uid'];
+    uid = json['id'];
     firstName = json['first_name'];
     lastName = json['last_name'];
     email = json['email'];

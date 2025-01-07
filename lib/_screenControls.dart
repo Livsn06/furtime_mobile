@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:furtime/drawer/doanddont.dart';
 import 'package:furtime/drawer/faqScreen.dart';
+import 'package:furtime/drawer/tips_and_care_screen.dart';
+import 'package:furtime/drawer/viewHelp.dart';
 
 import 'package:furtime/screens/allpets/AddPet.dart';
 import 'package:furtime/screens/allpets/allpets_screen.dart';
@@ -23,7 +25,6 @@ class ScreenControl extends StatefulWidget {
 }
 
 class _ScreenControlState extends State<ScreenControl> {
-  int _selectedIndex = 0;
 //
   // List of widgets corresponding to each tab
   final List<Widget> _screens = [
@@ -139,54 +140,59 @@ class _ScreenControlState extends State<ScreenControl> {
 // Function to handle navigation
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index;
+      navigationPage.value = index;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     APP_THEME.value = Theme.of(context);
-    return Scaffold(
-      drawer: buildDrawer(),
-      appBar: _appBars[_selectedIndex],
-      body: _screens[_selectedIndex],
+    return Obx(() {
+      return Scaffold(
+        backgroundColor: const Color(0xFFEEEEEE),
+        drawer: buildDrawer(),
+        appBar: _appBars[navigationPage.value],
+        body: _screens[navigationPage.value],
 
-      //FLoating Action Button
-      floatingActionButton: _selectedIndex == 2
-          ? FloatingActionButton(
-              onPressed: () async {
-                var status = await Permission.notification.request();
+        //FLoating Action Button
+        floatingActionButton: navigationPage.value == 2
+            ? FloatingActionButton(
+                onPressed: () async {
+                  var status = await Permission.notification.request();
 
-                if (status.isGranted) {
-                  print("Notification permission granted");
-                  Get.to(() => const AddTask());
-                } else if (status.isDenied) {
-                  print("Notification permission denied");
-                } else if (status.isPermanentlyDenied) {
-                  print(
-                      "Notification permission permanently denied. Please enable it from settings.");
-                  openAppSettings(); // Redirect to app settings
-                }
-              },
-              backgroundColor: Colors.deepOrange,
-              child: const Icon(
-                Icons.add_outlined,
-                color: Colors.white,
-              ),
-            )
-          : null,
-      //
-      // Bottom Navigation Bar
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        useLegacyColorScheme: false,
-        unselectedLabelStyle: const TextStyle(color: Colors.black),
-        fixedColor: Colors.blue,
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: _bottomNavItems,
-      ),
-    );
+                  if (status.isGranted) {
+                    print("Notification permission granted");
+                    Get.to(() => const AddTask());
+                  } else if (status.isDenied) {
+                    print("Notification permission denied");
+                  } else if (status.isPermanentlyDenied) {
+                    print(
+                        "Notification permission permanently denied. Please enable it from settings.");
+                    openAppSettings(); // Redirect to app settings
+                  }
+                },
+                backgroundColor: Colors.deepOrange,
+                child: const Icon(
+                  Icons.add_outlined,
+                  color: Colors.white,
+                ),
+              )
+            : null,
+        //
+        // Bottom Navigation Bar
+        bottomNavigationBar: Obx(() {
+          return BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            useLegacyColorScheme: false,
+            unselectedLabelStyle: const TextStyle(color: Colors.black),
+            fixedColor: Colors.blue,
+            currentIndex: navigationPage.value,
+            onTap: _onItemTapped,
+            items: _bottomNavItems,
+          );
+        }),
+      );
+    });
   }
 
   Drawer buildDrawer() {
@@ -200,13 +206,24 @@ class _ScreenControlState extends State<ScreenControl> {
             ),
             child: Align(
               alignment: Alignment.center,
-              child: Text(
-                'FurTime',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+              child: Column(
+                children: [
+                  CircleAvatar(
+                    radius: 43,
+                    backgroundColor: Colors.white,
+                    backgroundImage:
+                        AssetImage('assets/images/splash_icon.png'),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    'FurTime',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 19,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -215,6 +232,13 @@ class _ScreenControlState extends State<ScreenControl> {
             title: const Text('Profile'),
             onTap: () {
               Get.to(() => const ProfilesScreen());
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.tips_and_updates),
+            title: const Text('Tips & Care'),
+            onTap: () {
+              Get.to(() => const TipsAndCareScreen());
             },
           ),
         ],

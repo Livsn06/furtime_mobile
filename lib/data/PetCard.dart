@@ -36,14 +36,21 @@ class PetCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.file(
-                  File(imageUrl), // Replace with your image asset
-                  height: 160,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
-              ),
+                  borderRadius: BorderRadius.circular(12),
+                  child: imageUrl.isNotEmpty && File(imageUrl).existsSync()
+                      ? Image.file(
+                          alignment: Alignment.topCenter,
+                          File(imageUrl),
+                          height: 200,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        )
+                      : const Center(
+                          child: Icon(
+                            Icons.pets,
+                            size: 200,
+                          ),
+                        )),
               const Gap(15),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,

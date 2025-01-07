@@ -68,9 +68,10 @@ class FAQScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         backgroundColor: Colors.deepOrange,
         foregroundColor: Colors.white,
-        title: Text('FAQs for ${GetUtils.capitalizeFirst(petType)} Pets'),
+        title: const Text('FAQs'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

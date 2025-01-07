@@ -4,9 +4,6 @@ import 'package:furtime/helpers/db_sqflite.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../helpers/post_api.dart';
-import 'user_model.dart';
-
 class PetModel {
   int? id;
   String? fullname;
@@ -16,6 +13,11 @@ class PetModel {
   String? imagePath;
   XFile? imageFile;
   String type;
+  String color;
+  String weight;
+  String lastVaccinated;
+  String? additionalInformation;
+  int pet_user_ID = 0;
 
   String? createdAt;
   PetModel({
@@ -28,6 +30,11 @@ class PetModel {
     this.imageFile,
     this.type = 'Others',
     this.createdAt,
+    this.color = 'White',
+    this.weight = 'Unknown',
+    this.lastVaccinated = 'Unknown',
+    this.additionalInformation,
+    this.pet_user_ID = 0,
   });
 
   static List<PetModel> fromListJson(List<Map<String, dynamic>> json) {
@@ -48,19 +55,47 @@ class PetModel {
       gender: json[dbHelper.gender],
       age: json[dbHelper.age],
       type: json[dbHelper.petType],
+      color: json[dbHelper.color],
+      weight: json[dbHelper.weight],
+      lastVaccinated: json[dbHelper.lastVaccinated],
+      pet_user_ID: json[dbHelper.pet_user_ID],
+      additionalInformation: json[dbHelper.additionalInformation],
       imagePath: json[dbHelper.imagePath],
     );
   }
 
-  Future<Map<String, String>> createPetJson() async {
+  Future<Map<String, dynamic>> createPetJson() async {
     var dbHelper = DatabaseHelper();
 
-    var json = <String, String>{};
+    var json = <String, dynamic>{};
     json[dbHelper.fullname] = fullname.toString();
     json[dbHelper.breed] = breed.toString();
     json[dbHelper.gender] = gender.toString();
-    json[dbHelper.age] = age.toString();
-    json[dbHelper.petType] = type.toString();
+    json[dbHelper.age] = age;
+    json[dbHelper.petType] = type;
+    json[dbHelper.color] = color;
+    json[dbHelper.weight] = weight;
+    json[dbHelper.lastVaccinated] = lastVaccinated;
+    json[dbHelper.pet_user_ID] = pet_user_ID;
+    json[dbHelper.additionalInformation] = additionalInformation;
+    json[dbHelper.imagePath] = await pickAndStoreImage();
+    return json;
+  }
+
+  Future<Map<String, dynamic>> updatePetJson() async {
+    var dbHelper = DatabaseHelper();
+
+    var json = <String, dynamic>{};
+    json[dbHelper.fullname] = fullname.toString();
+    json[dbHelper.breed] = breed.toString();
+    json[dbHelper.gender] = gender.toString();
+    json[dbHelper.age] = age;
+    json[dbHelper.petType] = type;
+    json[dbHelper.color] = color;
+    json[dbHelper.weight] = weight;
+    json[dbHelper.lastVaccinated] = lastVaccinated;
+
+    json[dbHelper.additionalInformation] = additionalInformation;
     json[dbHelper.imagePath] = await pickAndStoreImage();
     return json;
   }

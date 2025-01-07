@@ -152,6 +152,7 @@ class _addTaskState extends State<EditTask> {
                       time: selectedTime.format(context),
                       isCompleted: false,
                       reminder: true,
+                      notificationID: widget.task.notificationID,
                     );
 
                     int isSuccess =
@@ -163,9 +164,11 @@ class _addTaskState extends State<EditTask> {
                         label: "Success",
                         text: "Task updated successfully",
                       );
+                      AwesomeNotifications().cancel(widget.task.notificationID);
+
                       AwesomeNotifications().createNotification(
                         content: NotificationContent(
-                          id: 1,
+                          id: widget.task.notificationID,
                           channelKey: 'basic_channel',
                           title: 'Task Reminder',
                           body: '${task.description}',

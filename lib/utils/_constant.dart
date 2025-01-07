@@ -25,3 +25,5 @@ RxList<CommentModel> COMMENT_DATA = RxList<CommentModel>([]);
 RxList<TaskModel> completedList = RxList([]);
 RxList<TaskModel> IncompletedList = RxList([]);
 RxString FILTERTYPE = 'ALL'.obs;
+
+RxInt navigationPage = 0.obs;

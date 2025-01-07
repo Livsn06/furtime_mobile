@@ -28,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (context) {
         return Obx(() {
           return ListView.builder(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(12.0),
             itemCount: ALL_POST_DATA.value.length + 1,
             itemBuilder: (context, index) {
               if (index == 0) {
@@ -63,8 +63,9 @@ class _HomeScreenState extends State<HomeScreen> {
               var post = ALL_POST_DATA.value[index - 1];
 
               return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                padding: const EdgeInsets.symmetric(vertical: 7.0),
                 child: PostCard(
+                  userId: post.user?.uid ?? 0,
                   postId: post.id!,
                   profileImage: post.user?.photoUrl,
                   profileName:

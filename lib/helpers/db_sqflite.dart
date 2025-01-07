@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:furtime/models/pet_model.dart';
@@ -29,7 +30,11 @@ class DatabaseHelper {
   String gender = 'gender';
   String imagePath = 'image_path';
   String petType = 'pet_type';
-
+  String color = 'color';
+  String weight = 'weight';
+  String lastVaccinated = 'last_vaccinated';
+  String pet_user_ID = 'user_ID';
+  String additionalInformation = 'additional_information';
   //
 
   String myTodosTable = 'todos';
@@ -41,6 +46,8 @@ class DatabaseHelper {
   String todoTime = 'time';
   String todoIsCompleted = 'is_completed';
   String hasReminder = 'has_reminder';
+  String todo_user_ID = 'user_ID';
+  String notification_ID = 'notification_id';
 
   Future<Database> _initDB() async {
     final dbPath = await getDatabasesPath();
@@ -63,6 +70,11 @@ class DatabaseHelper {
         $breed TEXT NOT NULL,
         $gender TEXT NOT NULL,
         $petType TEXT NOT NULL,
+        $color TEXT NOT NULL,
+        $weight TEXT NOT NULL,
+        $lastVaccinated TEXT NOT NULL,
+        $pet_user_ID INTEGER NOT NULL,
+        $additionalInformation TEXT NULL,
         $imagePath TEXT
       )
     ''');
@@ -76,7 +88,9 @@ class DatabaseHelper {
         $todoDate TEXT NOT NULL,
         $todoTime TEXT NOT NULL,
         $todoIsCompleted INTEGER NOT NULL,
-        $hasReminder INTEGER NOT NULL
+        $hasReminder INTEGER NOT NULL,
+        $todo_user_ID INTEGER NOT NULL,
+        $notification_ID INTEGER NOT NULL
       )
     ''');
       print('Table $myTodosTable created successfully.');
@@ -92,12 +106,37 @@ class DatabaseHelper {
 
   Future<int> insert(Map<String, dynamic> row) async {
     final db = await database;
+
+    row[pet_user_ID] = CURRENT_USER.value.uid;
+    log(row.toString(), name: "ROW DATA: ");
     return await db.insert(myPetsTable, row);
+  }
+
+  Future<int> updatePet(PetModel pet) async {
+    int result = 0;
+    try {
+      final db = await database;
+      var petJson = await pet.updatePetJson();
+      result = await db.update(
+        myPetsTable,
+        petJson,
+        where: '$id = ? and $pet_user_ID = ?',
+        whereArgs: [pet.id, CURRENT_USER.value.uid],
+      );
+    } catch (e) {
+      print(e.toString());
+    }
+    return result;
   }
 
   Future<List<Map<String, dynamic>>> queryAllRows() async {
     final db = await database;
-    var data = await db.query('$myPetsTable ORDER BY id DESC');
+    var data = await db.query(
+      myPetsTable,
+      where: '$pet_user_ID = ?',
+      whereArgs: [CURRENT_USER.value.uid],
+      orderBy: '$id DESC',
+    );
     ALL_PET_DATA.value = PetModel.fromListJson(data);
     return data;
   }
@@ -122,9 +161,13 @@ class DatabaseHelper {
     return copiedFile.path;
   }
 
-  Future<int> deletePet(int id) async {
+  Future<int> deletePet(int petid) async {
     final db = await database;
-    return await db.delete(myPetsTable, where: '$id = ?', whereArgs: [id]);
+    return await db.delete(
+      myPetsTable,
+      where: '$id = ? and $pet_user_ID = ?',
+      whereArgs: [petid, CURRENT_USER.value.uid],
+    );
   }
 
 //

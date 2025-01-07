@@ -14,8 +14,8 @@ class ViewHelpScreen extends StatelessWidget {
       appBar: AppBar(
         centerTitle: true,
         title: petType == 'others'
-            ? const Text('Help')
-            : Text('Help for ${GetUtils.capitalizeFirst(petType)}'),
+            ? const Text('About Pets')
+            : Text('About ${GetUtils.capitalizeFirst(petType)}s'),
         backgroundColor: Colors.deepOrange,
         foregroundColor: Colors.white,
       ),
@@ -26,31 +26,31 @@ class ViewHelpScreen extends StatelessWidget {
             Card(
               child: ListTile(
                 onTap: () {
-                  Get.to(() => DosAndDontsScreen(petType: petType));
-                },
-                contentPadding: const EdgeInsets.all(10),
-                leading: CircleAvatar(
-                  backgroundColor: Colors.deepOrange.withOpacity(0.4),
-                  child: const Icon(Icons.checklist_rounded),
-                ),
-                title: const Text('Do\'s and Don\'ts',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: const Text('Recommended actions for your pet.'),
-              ),
-            ),
-            Card(
-              child: ListTile(
-                onTap: () {
                   Get.to(() => TipsScreen(petType: petType));
                 },
                 contentPadding: const EdgeInsets.all(10),
                 leading: CircleAvatar(
                   backgroundColor: Colors.deepOrange.withOpacity(0.4),
-                  child: const Icon(Icons.tips_and_updates),
+                  child: const Icon(Icons.checklist_outlined),
                 ),
                 title: const Text('Tips',
                     style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: const Text('Advice and tips for your pet.'),
+              ),
+            ),
+            Card(
+              child: ListTile(
+                onTap: () {
+                  Get.to(() => DosAndDontsScreen(petType: petType));
+                },
+                contentPadding: const EdgeInsets.all(10),
+                leading: CircleAvatar(
+                  backgroundColor: Colors.deepOrange.withOpacity(0.4),
+                  child: const Icon(Icons.thumbs_up_down_sharp),
+                ),
+                title: const Text('Do\'s and Don\'ts',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: const Text('Recommended actions for your pet.'),
               ),
             ),
             Card(
@@ -61,7 +61,7 @@ class ViewHelpScreen extends StatelessWidget {
                 contentPadding: const EdgeInsets.all(10),
                 leading: CircleAvatar(
                   backgroundColor: Colors.deepOrange.withOpacity(0.4),
-                  child: const Icon(Icons.question_answer),
+                  child: const Icon(Icons.question_mark_sharp),
                 ),
                 title: const Text('FAQ',
                     style: TextStyle(fontWeight: FontWeight.bold)),

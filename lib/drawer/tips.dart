@@ -38,7 +38,7 @@ class TipsScreen extends StatelessWidget {
         backgroundColor: Colors.deepOrange,
         foregroundColor: Colors.white,
         centerTitle: true,
-        title: Text('${GetUtils.capitalizeFirst(petType)} Pet Tips & Care'),
+        title: const Text('Tips'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

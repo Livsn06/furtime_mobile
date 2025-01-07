@@ -63,9 +63,9 @@ class PostApi {
       print(response.statusCode);
       if (response.statusCode == 201) {
         var data = await response.stream.bytesToString();
-        var result = jsonDecode(data);
-        log(result.toString(), name: "API RESULTS: ");
-        return result['message'].toString();
+
+        log(data.toString(), name: "API RESULTS: ");
+        return 'success';
       }
 
       //
@@ -139,6 +139,37 @@ class PostApi {
     } catch (e) {
       log(e.toString(), name: "API ERROR: ");
       return null;
+    }
+  }
+
+  Future<String> deletePost({required int postId}) async {
+    String baseURL = "${API_BASE_URL.value}/api/posts/$postId";
+    String token = await AuthStorage.instance.getToken(
+      name: AuthStorage.instance.login_token,
+    );
+    try {
+      var request = http.delete(
+        Uri.parse(baseURL),
+        headers: {
+          "Accept": "application/json",
+          "ngrok-skip-browser-warning": "true",
+          "Authorization": "Bearer $token"
+        },
+      );
+      var response = await request;
+      print(response.statusCode);
+      log(response.body.toString(), name: "API RESULTS: ");
+      var result;
+      if (response.statusCode == 200) {
+        return 'success';
+      }
+
+      //
+      log(result.toString(), name: "API RESULTS: ");
+      return 'Something went wrong';
+    } catch (e) {
+      log(e.toString(), name: "API ERROR: ");
+      return 'Something went wrong';
     }
   }
 }

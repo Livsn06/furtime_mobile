@@ -13,14 +13,44 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../utils/_constant.dart';
 
-class AdditionalPet extends StatefulWidget {
-  const AdditionalPet({super.key});
-
+class EditPet extends StatefulWidget {
+  EditPet({super.key, required this.pet});
+  PetModel pet;
   @override
-  State<AdditionalPet> createState() => _additionalPetState();
+  State<EditPet> createState() => _additionalPetState();
 }
 
-class _additionalPetState extends State<AdditionalPet> {
+class _additionalPetState extends State<EditPet> {
+  @override
+  void initState() {
+    // TODO: implement initState
+
+    fullNameController.text = widget.pet.fullname!;
+    breedController.text = widget.pet.breed!;
+    ageController.text = widget.pet.age!.toString();
+    weightController.text = widget.pet.weight;
+    colorController.text = widget.pet.color;
+    lastVaccinationController.text = widget.pet.lastVaccinated;
+    additionalInfoController.text = widget.pet.additionalInformation ?? '';
+    gender = widget.pet.gender!;
+    type = widget.pet.type;
+
+    if (widget.pet.imagePath != null) {
+      image = XFile(widget.pet.imagePath!);
+    }
+
+    DateTime parsedDate =
+        DateFormat("MMM dd, yyyy").parse(widget.pet.lastVaccinated);
+    String formattedDate = parsedDate.toUtc().toIso8601String();
+
+    selectedDate = DateTime.parse(formattedDate);
+
+    lastVaccinationController.text =
+        DateFormat('MMM dd, yyyy').format(selectedDate!);
+
+    super.initState();
+  }
+
   final formKey = GlobalKey<FormState>();
   final fullNameController = TextEditingController();
   final breedController = TextEditingController();
@@ -39,7 +69,9 @@ class _additionalPetState extends State<AdditionalPet> {
     final pickedImage =
         await ImagePicker().pickImage(source: ImageSource.gallery);
     setState(() {
-      image = pickedImage;
+      if (pickedImage != null) {
+        image = pickedImage;
+      }
     });
   }
 
@@ -56,7 +88,7 @@ class _additionalPetState extends State<AdditionalPet> {
         elevation: 0,
         centerTitle: true,
         title: const Text(
-          'Add Pet',
+          'Edit Pet',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.white,
@@ -103,7 +135,7 @@ class _additionalPetState extends State<AdditionalPet> {
                 ),
                 const Gap(18),
                 const Text(
-                  'To Add Pet, please enter the needed information.',
+                  'To Edit Pet, please enter the needed information.',
                   style: TextStyle(
                     fontStyle: FontStyle.italic,
                     color: Colors.grey,
@@ -296,6 +328,7 @@ class _additionalPetState extends State<AdditionalPet> {
                           showLoadingModal(
                               label: "Adding Pet", text: "Please wait...");
                           var newPet = PetModel(
+                            id: widget.pet.id,
                             fullname: fullNameController.text,
                             age: int.parse(ageController.text),
                             breed: breedController.text,
@@ -311,14 +344,13 @@ class _additionalPetState extends State<AdditionalPet> {
                             imageFile: image,
                           );
 
-                          var petJson = await newPet.createPetJson();
                           int isSuccess =
-                              await DatabaseHelper.instance.insert(petJson);
+                              await DatabaseHelper.instance.updatePet(newPet);
 
                           if (isSuccess > 0) {
                             Get.close(3);
-                            Get.snackbar(
-                                'Success', "You have successfully added pet.");
+                            Get.snackbar('Success',
+                                "You have successfully updated pet.");
                           } else {
                             Get.close(1);
                             showFailedModal(
@@ -336,7 +368,7 @@ class _additionalPetState extends State<AdditionalPet> {
                           Navigator.of(context).pop();
                         });
                   },
-                  child: const Text('Add'),
+                  child: const Text('Update'),
                 ),
               ],
             ),

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:furtime/_screenControls.dart';
 import 'package:furtime/screens/home/home_screen.dart';
 import 'package:furtime/screens/start/onwalk_screen.dart';

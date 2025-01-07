@@ -118,6 +118,8 @@ class _addTaskState extends State<AddTask> {
                 label: "Add Task",
                 color: Colors.deepOrange,
                 onPress: () async {
+                  var notfiId = UniqueKey().hashCode;
+
                   showConfirmModal(context,
                       label: "Add Task",
                       text: "Are you sure you want to add this task?",
@@ -131,6 +133,7 @@ class _addTaskState extends State<AddTask> {
                       time: selectedTime.format(context),
                       isCompleted: false,
                       reminder: true,
+                      notificationID: notfiId,
                     );
 
                     int isSuccess =
@@ -145,7 +148,7 @@ class _addTaskState extends State<AddTask> {
                       );
                       AwesomeNotifications().createNotification(
                         content: NotificationContent(
-                          id: 1,
+                          id: notfiId,
                           channelKey: 'basic_channel',
                           title: 'Task Reminder',
                           body: '${task.description}',
