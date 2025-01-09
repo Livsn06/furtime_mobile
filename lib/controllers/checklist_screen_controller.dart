@@ -34,7 +34,7 @@ class TodoScreenController extends GetxController {
 
   List<TaskModel> getIncompleted() {
     var today = ALL_TODO_DATA.value.map((todo) {
-      if (todo.isCompleted ?? false == false) {
+      if (todo.isCompleted == false) {
         return todo;
       }
       return TaskModel();

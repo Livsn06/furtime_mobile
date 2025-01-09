@@ -14,6 +14,11 @@ class ToDoScreen extends StatefulWidget {
 }
 
 class _ToDoScreenState extends State<ToDoScreen> {
+  // String filter = 'ALL';
+  // void changeFilter(String value) {
+  //   filter = value;
+  // }
+
   @override
   Widget build(BuildContext context) {
     return GetBuilder<TodoScreenController>(
@@ -23,9 +28,9 @@ class _ToDoScreenState extends State<ToDoScreen> {
           List<TaskModel>? data;
           if (FILTERTYPE.value == 'ALL') {
             data = ALL_TODO_DATA.value;
-          } else if (FILTERTYPE.value == 'TODAY') {
+          } else if (FILTERTYPE.value == 'COMPLETED') {
             data = controller.getCompleted();
-          } else if (FILTERTYPE.value == 'TOMORROW') {
+          } else if (FILTERTYPE.value == 'INCOMPLETE') {
             data = controller.getIncompleted();
           }
           if (data == null || data.isEmpty) {
